@@ -31,14 +31,21 @@
     .disclaimer-white { font-size: 0.75rem; color: rgba(255,255,255,0.85); font-style: italic; }
     .cant-proyectos { font-size: 1.8rem; font-weight: bold; margin-top: 5px; }
 
+    /* CONTROLES PARA PDF (Evita cortes abruptos) */
     @media print {
       .no-print { display: none !important; }
-      .kpi-card, .status-card, tr { page-break-inside: avoid !important; break-inside: avoid !important; }
+      .kpi-card, .status-card, tr { 
+        page-break-inside: avoid !important; 
+        break-inside: avoid !important; 
+      }
+      .main-header { margin-bottom: 40px; }
     }
 
+    /* Ajustes para Móvil */
     @media (max-width: 768px) {
       .status-card { margin-bottom: 15px; }
       .main-header h2 { font-size: 1.2rem; }
+      .kpi-card h2 { font-size: 1.5rem; }
       .cant-proyectos { font-size: 1.4rem; }
     }
 
@@ -53,6 +60,7 @@
 </div>
 
 <div id="dashboard" style="display:none;" class="container-fluid">
+  
   <div class="main-header d-flex justify-content-between align-items-center">
     <div>
       <h2 class="mb-0">Control de Iniciativas - Banco de Proyectos 2026</h2>
@@ -117,4 +125,159 @@
       <div class="status-card bg-oth">
         <h6 class="fw-bold opacity-75">OTROS / PENDIENTES</h6>
         <h3 id="cardOthMonto">$ 0</h3>
-        <div
+        <div class="disclaimer-white">*Valores en miles de pesos</div>
+        <div id="cardOthCant" class="cant-proyectos">0 Proyectos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-container mb-5">
+    <div class="table-responsive">
+      <table class="table table-hover table-sm align-middle" style="font-size: 0.85rem;">
+        <thead class="table-dark">
+          <tr>
+            <th>BIP</th>
+            <th>Nombre de la Iniciativa</th>
+            <th>Comuna</th>
+            <th>Reevaluación</th>
+            <th class="text-end">Monto (M$)</th>
+            <th class="text-center">Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  // URL de la API proporcionada por ti
+  const API_URL = "https://script.google.com/macros/s/AKfycbwHBU5qa5Epp-7l38I0_Uxc7UdTzXx0C63erqqMsbE8Hv-cc4L_3IPnzTaUODk5QA5D/exec"; 
+
+  let DB = [];
+  // Mapeo dinámico: Prov(F=5), Com(G=6), BIP(I=8), Nom(J=9), Costo(K=10), Est(M=12), Reev(AB=27)
+  const IDX = { pro: 5, com: 6, cod: 8, nom: 9, mon: 10, est: 12, reev: 27 };
+
+  async function init() {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      // Filtrar filas vacías o encabezados usando la columna BIP
+      DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().trim().toLowerCase() !== "bip");
+      
+      poblarSelectores();
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      render();
+    } catch (error) {
+      document.getElementById('loader').innerHTML = `<div class="alert alert-danger m-3">Error al conectar con la planilla institucional. Verifica los permisos de la App Web.</div>`;
+    }
+  }
+
+  function exportarPDF() {
+    const btn = document.getElementById('btnPDF');
+    btn.innerHTML = "⌛ Generando...";
+    btn.disabled = true;
+    
+    const elementsToHide = document.querySelectorAll('.no-print');
+    elementsToHide.forEach(el => el.style.display = 'none');
+
+    const element = document.getElementById('dashboard');
+    const fecha = new Date().toLocaleDateString('es-CL').replace(/\//g, '-');
+    
+    const opt = {
+      margin: [15, 10, 15, 10],
+      filename: `Reporte_Gore_C33_${fecha}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 1.5, useCORS: true, scrollY: 0 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+      btn.innerHTML = "📄 Generar PDF";
+      btn.disabled = false;
+      elementsToHide.forEach(el => el.style.display = '');
+    }).catch(() => {
+      btn.innerHTML = "📄 Generar PDF";
+      btn.disabled = false;
+      elementsToHide.forEach(el => el.style.display = '');
+    });
+  }
+
+  function poblarSelectores() {
+    const getList = (idx) => [...new Set(DB.map(r => r[idx]?.toString().trim()))].filter(x => x).sort();
+    
+    const fill = (id, list, label, prefix) => {
+      let el = document.getElementById(id);
+      el.innerHTML = `<option value="ALL">${prefix} ${label}</option>`;
+      list.forEach(v => el.innerHTML += `<option value="${v}">${v}</option>`);
+    };
+
+    fill('selProv', getList(IDX.pro), 'Provincias', 'Todas las');
+    fill('selComuna', getList(IDX.com), 'Comunas', 'Todas las');
+    fill('selReev', getList(IDX.reev), 'Reevaluaciones', 'Todas las');
+    fill('selEstado', getList(IDX.est), 'Estados', 'Todos los');
+  }
+
+  function render() {
+    const fP = document.getElementById('selProv').value;
+    const fC = document.getElementById('selComuna').value;
+    const fR = document.getElementById('selReev').value;
+    const fE = document.getElementById('selEstado').value;
+    const search = document.getElementById('busqueda').value.toLowerCase();
+
+    const rows = DB.filter(r => {
+      const est = (r[IDX.est] || "").toString().trim().toUpperCase();
+      const ree = (r[IDX.reev] || "").toString().trim();
+      return (fP === "ALL" || r[IDX.pro] === fP) &&
+             (fC === "ALL" || r[IDX.com] === fC) &&
+             (fR === "ALL" || ree === fR) &&
+             (fE === "ALL" || est === fE) &&
+             (r[IDX.nom].toString().toLowerCase().includes(search) || r[IDX.cod].toString().includes(search));
+    });
+
+    let totalMonto = 0;
+    let recCount = 0;
+    let tableHtml = "";
+    let stats = { 'RECOMENDADO': {m:0, c:0}, 'OBSERVADO': {m:0, c:0}, 'OTROS': {m:0, c:0} };
+
+    rows.forEach(r => {
+      const val = parseInt(r[IDX.mon]?.toString().replace(/[^0-9]/g, '')) || 0;
+      totalMonto += val;
+      
+      let estRaw = (r[IDX.est] || "PENDIENTE").toString().trim().toUpperCase();
+      let cat = 'OTROS';
+      if (estRaw.includes("RECOMENDADO")) { cat = 'RECOMENDADO'; recCount++; }
+      else if (estRaw.includes("OBSERVADO")) { cat = 'OBSERVADO'; }
+      
+      stats[cat].m += val;
+      stats[cat].c += 1;
+
+      tableHtml += `<tr>
+        <td><small class="text-muted">${r[IDX.cod]}</small></td>
+        <td style="max-width:250px"><strong>${r[IDX.nom]}</strong></td>
+        <td>${r[IDX.com]}</td>
+        <td>${r[IDX.reev] || '-'}</td>
+        <td class="text-end fw-bold text-primary">$${val.toLocaleString('de-DE')}</td>
+        <td class="text-center"><span class="badge ${cat === 'RECOMENDADO' ? 'bg-success' : 'bg-warning text-dark'}">${estRaw}</span></td>
+      </tr>`;
+    });
+
+    document.getElementById('tableBody').innerHTML = tableHtml;
+    document.getElementById('kpiCosto').innerText = "$" + totalMonto.toLocaleString('de-DE');
+    document.getElementById('kpiRec').innerText = recCount;
+    document.getElementById('kpiCount').innerText = rows.length;
+    
+    const f = (n) => "$" + n.toLocaleString('de-DE');
+    document.getElementById('cardRecMonto').innerText = f(stats['RECOMENDADO'].m);
+    document.getElementById('cardRecCant').innerText = stats['RECOMENDADO'].c + " Proyectos";
+    document.getElementById('cardObsMonto').innerText = f(stats['OBSERVADO'].m);
+    document.getElementById('cardObsCant').innerText = stats['OBSERVADO'].c + " Proyectos";
+    document.getElementById('cardOthMonto').innerText = f(stats['OTROS'].m);
+    document.getElementById('cardOthCant').innerText = stats['OTROS'].c + " Proyectos";
+  }
+
+  init();
+</script>
+</body>
+</html>
