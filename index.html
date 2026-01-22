@@ -22,6 +22,7 @@
       border-top: 5px solid var(--blue-lagos); box-shadow: 0 2px 8px rgba(0,0,0,0.05); height: 100%;
     }
 
+    /* Diseño de tarjetas de estado basado en la fase previa */
     .status-card { border-radius: 12px; padding: 25px; color: white; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     .bg-rec { background: var(--green-rec); }
     .bg-obs { background: var(--orange-obs); }
@@ -38,7 +39,6 @@
       .main-header { margin-bottom: 40px; }
     }
 
-    /* Ajuste responsivo para celulares */
     @media (max-width: 768px) {
       .status-card { margin-bottom: 15px; }
       .main-header h2 { font-size: 1.2rem; }
@@ -60,7 +60,7 @@
   <div class="main-header d-flex justify-content-between align-items-center">
     <div>
       <h2 class="mb-0">Gestión de Iniciativas - Circular 33</h2>
-      <p class="mb-0 opacity-75 small">Gobierno Regional de Los Lagos - Reporte 2026</p>
+      <p class="mb-0 opacity-75 small">Gobierno Regional de Los Lagos - Reporte Técnico</p>
     </div>
     <div class="d-flex gap-2 no-print">
       <button id="btnPDF" class="btn btn-danger btn-sm fw-bold shadow-sm" onclick="exportarPDF()">📄 Generar PDF</button>
@@ -147,7 +147,7 @@
 </div>
 
 <script>
-  // NUEVA URL INTEGRADA
+  // NUEVA URL INTEGRADA CORRECTAMENTE
   const API_URL = "https://script.google.com/macros/s/AKfycby3LB5_-fxXhmRIAiuCWK5qQW02FZPal_yV-3tbE2qSaaHiS5lESMhIOPuY-26W6R9z/exec"; 
 
   let DB = [];
@@ -159,7 +159,7 @@
       const response = await fetch(API_URL);
       const data = await response.json();
       
-      // Limpiamos la data quitando encabezados o filas vacías (usando BIP como guía)
+      // Limpiamos los encabezados basándonos en la columna BIP
       DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().trim().toLowerCase() !== "bip");
       
       poblarSelectores();
