@@ -3,27 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Circular 33 - Los Lagos</title>
+  <title>Control Circular 33 - Los Lagos</title>
+  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
   <style>
     :root { --blue-lagos: #004a87; --accent: #0072bc; --green-rec: #10b981; --orange-obs: #f59e0b; --gray-oth: #94a3b8; }
     body { background-color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; }
-    .main-header { background: linear-gradient(135deg, var(--blue-lagos) 0%, var(--accent) 100%); color: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; }
-    .kpi-card { background: white; border: none; border-radius: 12px; padding: 20px; border-top: 5px solid var(--blue-lagos); box-shadow: 0 2px 8px rgba(0,0,0,0.05); height: 100%; }
+    
+    .main-header { 
+      background: linear-gradient(135deg, var(--blue-lagos) 0%, var(--accent) 100%); 
+      color: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .kpi-card { 
+      background: white; border: none; border-radius: 12px; padding: 20px; 
+      border-top: 5px solid var(--blue-lagos); box-shadow: 0 2px 8px rgba(0,0,0,0.05); height: 100%;
+    }
+
     .status-card { border-radius: 12px; padding: 25px; color: white; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .bg-rec { background: var(--green-rec); } .bg-obs { background: var(--orange-obs); } .bg-oth { background: var(--gray-oth); }
+    .bg-rec { background: var(--green-rec); }
+    .bg-obs { background: var(--orange-obs); }
+    .bg-oth { background: var(--gray-oth); }
+    
+    .disclaimer-white { font-size: 0.75rem; color: rgba(255,255,255,0.85); font-style: italic; }
     .cant-proyectos { font-size: 1.8rem; font-weight: bold; margin-top: 5px; }
-    @media print { .no-print { display: none !important; } .status-card, tr { page-break-inside: avoid !important; } }
-    @media (max-width: 768px) { .col-md-4 { margin-bottom: 15px; } }
-    #loader { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; }
+
+    @media print {
+      .no-print { display: none !important; }
+      .kpi-card, .status-card, tr, .table-container { 
+        page-break-inside: avoid !important; 
+        break-inside: avoid !important; 
+      }
+    }
+
+    @media (max-width: 768px) {
+      .status-card { margin-bottom: 15px; }
+      .main-header h2 { font-size: 1.2rem; }
+      .cant-proyectos { font-size: 1.4rem; }
+    }
+
+    #loader { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; text-align: center; }
   </style>
 </head>
 <body>
+
 <div id="loader">
   <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
-  <p class="mt-3 fw-bold text-secondary">Sincronizando con Excel Institucional...</p>
+  <p class="mt-3 fw-bold text-secondary">Sincronizando Banco de Proyectos 2026...</p>
 </div>
+
 <div id="dashboard" style="display:none;" class="container-fluid">
   <div class="main-header d-flex justify-content-between align-items-center">
     <div>
@@ -35,21 +65,29 @@
       <button class="btn btn-light btn-sm fw-bold shadow-sm" onclick="location.reload()">🔄 Actualizar</button>
     </div>
   </div>
+
   <div class="row g-3 mb-4">
-    <div class="col-md-4"><div class="kpi-card">
-      <div class="text-muted small fw-bold">COSTO TOTAL SELECCIÓN (M$)</div>
-      <h2 id="kpiCosto" class="mt-1" style="color: var(--blue-lagos);">$ 0</h2>
-      <span class="small text-muted italic">*Valores en miles de pesos</span>
-    </div></div>
-    <div class="col-md-4"><div class="kpi-card" style="border-top-color: var(--green-rec);">
-      <div class="text-muted small fw-bold">RECOMENDADOS (RS)</div>
-      <h2 id="kpiRec" class="text-success mt-1">0</h2>
-    </div></div>
-    <div class="col-md-4"><div class="kpi-card" style="border-top-color: #6366f1;">
-      <div class="text-muted small fw-bold">TOTAL PROYECTOS EN VISTA</div>
-      <h2 id="kpiCount" class="text-primary mt-1">0</h2>
-    </div></div>
+    <div class="col-md-4">
+      <div class="kpi-card">
+        <div class="text-muted small fw-bold">COSTO TOTAL SELECCIÓN (M$)</div>
+        <h2 id="kpiCosto" class="mt-1" style="color: var(--blue-lagos);">$ 0</h2>
+        <span class="small text-muted italic">*Valores en miles de pesos</span>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="kpi-card" style="border-top-color: var(--green-rec);">
+        <div class="text-muted small fw-bold">RECOMENDADOS (RS)</div>
+        <h2 id="kpiRec" class="text-success mt-1">0</h2>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="kpi-card" style="border-top-color: #6366f1;">
+        <div class="text-muted small fw-bold">TOTAL EN VISTA</div>
+        <h2 id="kpiCount" class="text-primary mt-1">0</h2>
+      </div>
+    </div>
   </div>
+
   <div class="card p-3 mb-4 border-0 shadow-sm no-print">
     <div class="row g-2">
       <div class="col-md-2"><select id="selProv" class="form-select form-select-sm" onchange="render()"></select></div>
@@ -59,40 +97,60 @@
       <div class="col-md-4"><input type="text" id="busqueda" class="form-control form-control-sm" placeholder="Buscar por Nombre o BIP..." onkeyup="render()"></div>
     </div>
   </div>
+
   <div class="row g-3 mb-4">
-    <div class="col-12 col-md-4"><div class="status-card bg-rec">
-      <h6 class="fw-bold opacity-75">RECOMENDADOS</h6>
-      <h3 id="cardRecMonto">$ 0</h3>
-      <div class="disclaimer-white">*Valores en miles de pesos</div>
-      <div id="cardRecCant" class="cant-proyectos">0 Proyectos</div>
-    </div></div>
-    <div class="col-12 col-md-4"><div class="status-card bg-obs">
-      <h6 class="fw-bold opacity-75">OBSERVADOS</h6>
-      <h3 id="cardObsMonto">$ 0</h3>
-      <div class="disclaimer-white">*Valores en miles de pesos</div>
-      <div id="cardObsCant" class="cant-proyectos">0 Proyectos</div>
-    </div></div>
-    <div class="col-12 col-md-4"><div class="status-card bg-oth">
-      <h6 class="fw-bold opacity-75">OTROS / PENDIENTES</h6>
-      <h3 id="cardOthMonto">$ 0</h3>
-      <div class="disclaimer-white">*Valores en miles de pesos</div>
-      <div id="cardOthCant" class="cant-proyectos">0 Proyectos</div>
-    </div></div>
+    <div class="col-12 col-md-4">
+      <div class="status-card bg-rec">
+        <h6 class="fw-bold opacity-75">RECOMENDADOS</h6>
+        <h3 id="cardRecMonto">$ 0</h3>
+        <div class="disclaimer-white">*Miles de pesos</div>
+        <div id="cardRecCant" class="cant-proyectos">0 Proyectos</div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="status-card bg-obs">
+        <h6 class="fw-bold opacity-75">OBSERVADOS</h6>
+        <h3 id="cardObsMonto">$ 0</h3>
+        <div class="disclaimer-white">*Miles de pesos</div>
+        <div id="cardObsCant" class="cant-proyectos">0 Proyectos</div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="status-card bg-oth">
+        <h6 class="fw-bold opacity-75">OTROS / PENDIENTES</h6>
+        <h3 id="cardOthMonto">$ 0</h3>
+        <div class="disclaimer-white">*Miles de pesos</div>
+        <div id="cardOthCant" class="cant-proyectos">0 Proyectos</div>
+      </div>
+    </div>
   </div>
+
   <div class="table-container mb-5 bg-white p-3 rounded shadow-sm">
     <div class="table-responsive">
       <table class="table table-hover table-sm align-middle" style="font-size: 0.85rem;">
-        <thead class="table-dark"><tr><th>BIP</th><th>Nombre Iniciativa</th><th>Comuna</th><th>Reevaluación</th><th class="text-end">Monto (M$)</th><th class="text-center">Estado</th></tr></thead>
+        <thead class="table-dark">
+          <tr>
+            <th>BIP</th>
+            <th>Nombre Iniciativa</th>
+            <th>Comuna</th>
+            <th>Reevaluación</th>
+            <th class="text-end">Monto (M$)</th>
+            <th class="text-center">Estado</th>
+          </tr>
+        </thead>
         <tbody id="tableBody"></tbody>
       </table>
     </div>
   </div>
 </div>
+
 <script>
-  // PEGA AQUÍ TU NUEVA URL DE LA APP WEB
-  const API_URL = "URL_DE_TU_NUEVA_APP_WEB"; 
+  // NUEVA URL DEL SCRIPT INTEGRADA
+  const API_URL = "https://script.google.com/macros/s/AKfycbzOxQ6v0exTkg05H4k2wLQfHDR0QcnlnrjIwWYAckTr_giriO5dkIT88PT37s2rqKth/exec"; 
+
   let DB = [];
   const IDX = { pro: 5, com: 6, cod: 8, nom: 9, mon: 10, est: 12, reev: 27 };
+
   async function init() {
     try {
       const response = await fetch(API_URL);
@@ -103,9 +161,28 @@
       document.getElementById('dashboard').style.display = 'block';
       render();
     } catch (error) {
-      document.getElementById('loader').innerHTML = `<div class="alert alert-danger m-3">Error de conexión. Verifica los permisos de la App Web.</div>`;
+      document.getElementById('loader').innerHTML = `<div class="alert alert-danger m-3">Error al conectar con la planilla. Verifica que el script sea público.</div>`;
     }
   }
+
+  function exportarPDF() {
+    const btn = document.getElementById('btnPDF');
+    btn.innerHTML = "⌛..."; btn.disabled = true;
+    const elementsToHide = document.querySelectorAll('.no-print');
+    elementsToHide.forEach(el => el.style.display = 'none');
+    const opt = {
+      margin: [15, 10, 15, 10],
+      filename: `Reporte_C33_Lagos.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 1.5, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    };
+    html2pdf().set(opt).from(document.getElementById('dashboard')).save().then(() => {
+      btn.innerHTML = "📄 Generar PDF"; btn.disabled = false;
+      elementsToHide.forEach(el => el.style.display = '');
+    });
+  }
+
   function poblarSelectores() {
     const getList = (idx) => [...new Set(DB.map(r => r[idx]?.toString().trim()))].filter(x => x).sort();
     const fill = (id, list, label, prefix) => {
@@ -113,11 +190,12 @@
       el.innerHTML = `<option value="ALL">${prefix} ${label}</option>`;
       list.forEach(v => el.innerHTML += `<option value="${v}">${v}</option>`);
     };
-    fill('selProv', getList(IDX.pro), 'Provincias', 'Todas las');
-    fill('selComuna', getList(IDX.com), 'Comunas', 'Todas las');
-    fill('selReev', getList(IDX.reev), 'Reevaluaciones', 'Todas las');
-    fill('selEstado', getList(IDX.est), 'Estados', 'Todos los');
+    fill('selProv', getList(IDX.pro), 'Provincias', 'Todas');
+    fill('selComuna', getList(IDX.com), 'Comunas', 'Todas');
+    fill('selReev', getList(IDX.reev), 'Reevaluaciones', 'Todas');
+    fill('selEstado', getList(IDX.est), 'Estados', 'Todos');
   }
+
   function render() {
     const fP = document.getElementById('selProv').value, fC = document.getElementById('selComuna').value,
           fR = document.getElementById('selReev').value, fE = document.getElementById('selEstado').value,
@@ -137,7 +215,7 @@
       let cat = estRaw.includes("RECOMENDADO") ? 'RECOMENDADO' : (estRaw.includes("OBSERVADO") ? 'OBSERVADO' : 'OTROS');
       stats[cat].m += val; stats[cat].c += 1;
       if (cat === 'RECOMENDADO') recCount++;
-      tableHtml += `<tr><td><small class="text-muted">${r[IDX.cod]}</small></td><td style="max-width:250px"><strong>${r[IDX.nom]}</strong></td><td>${r[IDX.com]}</td><td>${r[IDX.reev] || '-'}</td><td class="text-end fw-bold text-primary">$${val.toLocaleString('de-DE')}</td><td class="text-center"><span class="badge ${cat === 'RECOMENDADO' ? 'bg-success' : 'bg-warning text-dark'}">${estRaw}</span></td></tr>`;
+      tableHtml += `<tr><td><small class="text-muted">${r[IDX.cod]}</small></td><td><strong>${r[IDX.nom]}</strong></td><td>${r[IDX.com]}</td><td>${r[IDX.reev] || '-'}</td><td class="text-end fw-bold text-primary">$${val.toLocaleString('de-DE')}</td><td class="text-center"><span class="badge ${cat === 'RECOMENDADO' ? 'bg-success' : 'bg-warning text-dark'}">${estRaw}</span></td></tr>`;
     });
     document.getElementById('tableBody').innerHTML = tableHtml;
     document.getElementById('kpiCosto').innerText = "$" + totalMonto.toLocaleString('de-DE');
@@ -150,18 +228,6 @@
     document.getElementById('cardObsCant').innerText = stats['OBSERVADO'].c + " Proyectos";
     document.getElementById('cardOthMonto').innerText = f(stats['OTROS'].m);
     document.getElementById('cardOthCant').innerText = stats['OTROS'].c + " Proyectos";
-  }
-  function exportarPDF() {
-    const btn = document.getElementById('btnPDF');
-    btn.innerHTML = "⌛..."; btn.disabled = true;
-    const elementsToHide = document.querySelectorAll('.no-print');
-    elementsToHide.forEach(el => el.style.display = 'none');
-    const opt = { margin: [15, 10, 15, 10], filename: 'Reporte_C33.pdf', image: { type: 'jpeg', quality: 0.98 },
-                  html2canvas: { scale: 1.5, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } };
-    html2pdf().set(opt).from(document.getElementById('dashboard')).save().then(() => {
-      btn.innerHTML = "📄 Generar PDF"; btn.disabled = false;
-      elementsToHide.forEach(el => el.style.display = '');
-    });
   }
   init();
 </script>
