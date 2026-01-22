@@ -14,7 +14,7 @@
     
     .main-header { 
       background: linear-gradient(135deg, var(--blue-lagos) 0%, var(--accent) 100%); 
-      color: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      color: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     
     .kpi-card { 
@@ -22,7 +22,6 @@
       border-top: 5px solid var(--blue-lagos); box-shadow: 0 2px 8px rgba(0,0,0,0.05); height: 100%;
     }
 
-    /* Diseño de tarjetas de estado basado en la fase previa */
     .status-card { border-radius: 12px; padding: 25px; color: white; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     .bg-rec { background: var(--green-rec); }
     .bg-obs { background: var(--orange-obs); }
@@ -32,11 +31,9 @@
     .disclaimer-white { font-size: 0.75rem; color: rgba(255,255,255,0.85); font-style: italic; }
     .cant-proyectos { font-size: 1.8rem; font-weight: bold; margin-top: 5px; }
 
-    /* Fix para evitar cortes en PDF */
     @media print {
       .no-print { display: none !important; }
       .kpi-card, .status-card, tr { page-break-inside: avoid !important; break-inside: avoid !important; }
-      .main-header { margin-bottom: 40px; }
     }
 
     @media (max-width: 768px) {
@@ -52,15 +49,14 @@
 
 <div id="loader">
   <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
-  <p class="mt-3 fw-bold text-secondary">Sincronizando Circular 33 - 2026...</p>
+  <p class="mt-3 fw-bold text-secondary">Sincronizando con Banco de Proyectos 2026...</p>
 </div>
 
 <div id="dashboard" style="display:none;" class="container-fluid">
-  
   <div class="main-header d-flex justify-content-between align-items-center">
     <div>
       <h2 class="mb-0">Gestión de Iniciativas - Circular 33</h2>
-      <p class="mb-0 opacity-75 small">Gobierno Regional de Los Lagos - Reporte Técnico</p>
+      <p class="mb-0 opacity-75 small">Gobierno Regional de Los Lagos - Reporte Técnico 2026</p>
     </div>
     <div class="d-flex gap-2 no-print">
       <button id="btnPDF" class="btn btn-danger btn-sm fw-bold shadow-sm" onclick="exportarPDF()">📄 Generar PDF</button>
@@ -71,7 +67,7 @@
   <div class="row g-3 mb-4">
     <div class="col-md-4">
       <div class="kpi-card">
-        <div class="text-muted small fw-bold">MONTO TOTAL SELECCIÓN (M$)</div>
+        <div class="text-muted small fw-bold">COSTO TOTAL SELECCIÓN (M$)</div>
         <h2 id="kpiCosto" class="mt-1" style="color: var(--blue-lagos);">$ 0</h2>
         <span class="disclaimer">*Valores en miles de pesos</span>
       </div>
@@ -84,7 +80,7 @@
     </div>
     <div class="col-md-4">
       <div class="kpi-card" style="border-top-color: #6366f1;">
-        <div class="text-muted small fw-bold">TOTAL EN VISTA</div>
+        <div class="text-muted small fw-bold">TOTAL PROYECTOS EN VISTA</div>
         <h2 id="kpiCount" class="text-primary mt-1">0</h2>
       </div>
     </div>
@@ -127,7 +123,7 @@
     </div>
   </div>
 
-  <div class="table-container mb-5">
+  <div class="table-container mb-5 bg-white p-3 rounded shadow-sm">
     <div class="table-responsive">
       <table class="table table-hover table-sm align-middle" style="font-size: 0.85rem;">
         <thead class="table-dark">
@@ -147,8 +143,8 @@
 </div>
 
 <script>
-  // NUEVA URL INTEGRADA CORRECTAMENTE
-  const API_URL = "https://script.google.com/macros/s/AKfycby3LB5_-fxXhmRIAiuCWK5qQW02FZPal_yV-3tbE2qSaaHiS5lESMhIOPuY-26W6R9z/exec"; 
+  // URL de la API actualizada con el ID de la planilla de solo lectura
+  const API_URL = "https://script.google.com/macros/s/AKfycbwQ1Av3kZaFGS6NjeyeJNAxN0vUhJCk8IOGH-lDs5QFyTNE6rIC8ANPcKGruQT2Eezt/exec"; 
 
   let DB = [];
   // Mapeo dinámico: Prov(F=5), Com(G=6), BIP(I=8), Nom(J=9), Costo(K=10), Est(M=12), Reev(AB=27)
@@ -158,16 +154,14 @@
     try {
       const response = await fetch(API_URL);
       const data = await response.json();
-      
-      // Limpiamos los encabezados basándonos en la columna BIP
+      // Filtrar encabezados
       DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().trim().toLowerCase() !== "bip");
-      
       poblarSelectores();
       document.getElementById('loader').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
       render();
     } catch (error) {
-      document.getElementById('loader').innerHTML = `<div class="alert alert-danger m-3">Error al conectar con la base de datos de Google. Verifica que la App Web esté publicada para "Cualquier persona".</div>`;
+      document.getElementById('loader').innerHTML = `<div class="alert alert-danger m-3">Error al conectar con la planilla (Solo Lectura). Verifica que el script sea público.</div>`;
     }
   }
 
@@ -175,7 +169,6 @@
     const btn = document.getElementById('btnPDF');
     btn.innerHTML = "⌛ Generando...";
     btn.disabled = true;
-    
     const elementsToHide = document.querySelectorAll('.no-print');
     elementsToHide.forEach(el => el.style.display = 'none');
 
@@ -184,17 +177,13 @@
     
     const opt = {
       margin: [15, 10, 15, 10],
-      filename: `Reporte_C33_GoreLagos_${fecha}.pdf`,
+      filename: `Reporte_C33_Lagos_${fecha}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 1.5, useCORS: true, scrollY: 0 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
 
     html2pdf().set(opt).from(element).save().then(() => {
-      btn.innerHTML = "📄 Generar PDF";
-      btn.disabled = false;
-      elementsToHide.forEach(el => el.style.display = '');
-    }).catch(() => {
       btn.innerHTML = "📄 Generar PDF";
       btn.disabled = false;
       elementsToHide.forEach(el => el.style.display = '');
@@ -241,14 +230,12 @@
     rows.forEach(r => {
       const val = parseInt(r[IDX.mon]?.toString().replace(/[^0-9]/g, '')) || 0;
       totalMonto += val;
-      
       let estRaw = (r[IDX.est] || "PENDIENTE").toString().trim().toUpperCase();
-      let cat = 'OTROS';
-      if (estRaw.includes("RECOMENDADO")) { cat = 'RECOMENDADO'; recCount++; }
-      else if (estRaw.includes("OBSERVADO")) { cat = 'OBSERVADO'; }
+      let cat = estRaw.includes("RECOMENDADO") ? 'RECOMENDADO' : (estRaw.includes("OBSERVADO") ? 'OBSERVADO' : 'OTROS');
       
       stats[cat].m += val;
       stats[cat].c += 1;
+      if (cat === 'RECOMENDADO') recCount++;
 
       tableHtml += `<tr>
         <td><small class="text-muted">${r[IDX.cod]}</small></td>
