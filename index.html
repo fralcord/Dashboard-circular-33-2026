@@ -18,14 +18,17 @@
     }
     body { background-color: #f8fafc; font-family: 'Segoe UI', sans-serif; padding: 10px; }
     .main-header { background: linear-gradient(135deg, var(--blue-lagos), #0072bc); color: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; }
+    
     .kpi-unified { background: white; border-radius: 12px; border-top: 5px solid var(--green-rec); box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; overflow: hidden; }
     .kpi-section { flex: 1; padding: 20px; text-align: center; }
+    
     .status-card { border-radius: 12px; padding: 15px; color: white; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 140px; }
     .bg-obs { background: var(--orange-obs); } 
     .bg-reev { background: var(--reev); } 
     .bg-tram-rec { background: var(--cyan-tram); color: #000; } 
     .bg-tram-obs { background: var(--purple-tram); }
     .bg-oth { background: var(--gray-oth); }
+    
     .cant-proyectos { font-size: 1.8rem; font-weight: bold; }
     .disclaimer { font-size: 0.75rem; color: #6c757d; font-style: italic; }
     .status-title { font-size: 0.85rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; height: 2.5rem; display: block; }
@@ -65,7 +68,7 @@
         </div>
         <div style="width: 1px; background: #e2e8f0; margin: 15px 0;"></div>
         <div class="kpi-section">
-          <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE</div>
+          <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE (RT)</div>
           <h2 id="kpiRec" class="text-success mt-1" style="font-weight: 800;">0</h2>
           <div class="small text-muted">Proyectos "Cumple RT"</div>
         </div>
@@ -109,17 +112,18 @@
 </div>
 
 <script>
-  // Tu URL de implementación
   const API_URL = "https://script.google.com/macros/s/AKfycbzslo__5lmVv9l2GFrEjKeQ_IgP8wneeqDddXTXWfd_kVjNAU7KnF1HdLarRAOTZCFP/exec"; 
   let DB = [];
-  const IDX = { pro: 5, com: 6, for: 7, cod: 8, nom: 9, mon: 10, est: 12, reev: 26 };
+  // Mapeo exacto según image_f7a26e
+  const IDX = { pro: 5, com: 6, for: 7, cod: 8, nom: 9, mon: 10, est: 12, reev: 27 };
 
   async function init() {
     try {
       const response = await fetch(API_URL);
       const data = await response.json();
-      // Filtrar encabezados basándose en que el BIP no sea la palabra "BIP"
-      DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().toUpperCase() !== "BIP");
+      
+      // Filtrado de encabezados robusto
+      DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().toUpperCase() !== "BIP" && r[IDX.cod].toString().trim() !== "");
       
       poblarProvincias();
       actualizarComunas();
@@ -127,13 +131,13 @@
       document.getElementById('loader').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
       
-      // Asignar eventos a los botones de forma segura
+      // Asignación de botones reparada
       document.getElementById('btnActualizar').onclick = () => window.location.reload();
       document.getElementById('btnPDF').onclick = exportarPDF;
       
     } catch (e) { 
-      console.error("Error inicializando:", e);
-      document.getElementById('loader').innerHTML = '<div class="alert alert-danger">Error cargando datos. Revisa la consola.</div>';
+      console.error("Error en init:", e);
+      document.getElementById('loader').innerHTML = '<div class="alert alert-danger m-3">Error al conectar con los datos. Revisa la consola.</div>';
     }
   }
 
@@ -147,7 +151,7 @@
   function actualizarComunas() {
     const provSel = document.getElementById('selProv').value;
     const filteredDB = provSel === "ALL" ? DB : DB.filter(r => r[IDX.pro]?.toString().trim() === provSel);
-    const list = [...new Set(filteredDB.map(r => r[IDX.com]?.toString().trim()))].filter(x => x).sort();
+    const list = [...new Set(filteredDB.map(r => r[idx_comuna = IDX.com]?.toString().trim()))].filter(x => x).sort();
     
     let el = document.getElementById('selComuna');
     el.innerHTML = '<option value="ALL">Todas las Comunas</option>';
@@ -189,6 +193,8 @@
       else if (est === "FIRMA OBS") s.tramObs++;
       else if (!est.includes("CUMPLE RT")) s.oth++;
 
+      let badge = est.includes('RT') ? 'bg-success' : (est.includes('OBS') ? 'bg-warning text-dark' : 'bg-secondary');
+
       html += `<tr>
         <td>${r[IDX.cod]}</td>
         <td><strong>${r[IDX.nom]}</strong></td>
@@ -197,7 +203,7 @@
         <td>${r[IDX.com]}</td>
         <td class="text-center">${rv ? '✅' : '❌'}</td>
         <td class="text-end fw-bold text-primary">${f_miles(val)}</td>
-        <td><span class="badge ${est.includes('RT')?'bg-success':'bg-secondary'}">${est || 'PENDIENTE'}</span></td>
+        <td><span class="badge ${badge}">${est || 'PENDIENTE'}</span></td>
       </tr>`;
     });
 
@@ -216,6 +222,11 @@
 
   function exportarPDF() {
     const element = document.getElementById('dashboard');
+    const btn = document.getElementById('btnPDF');
+    
+    btn.disabled = true;
+    btn.innerText = "⏳ Generando...";
+
     const opt = { 
       margin: 5, 
       filename: 'Reporte_Circular33_2026.pdf', 
@@ -224,17 +235,12 @@
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
     };
     
-    // Desactivar el botón temporalmente para evitar spam
-    const btn = document.getElementById('btnPDF');
-    btn.disabled = true;
-    btn.innerText = "⏳ Generando...";
-
     html2pdf().set(opt).from(element).save().then(() => {
       btn.disabled = false;
       btn.innerText = "📄 Generar PDF";
     }).catch(err => {
       console.error("Error PDF:", err);
-      alert("Hubo un error al generar el PDF.");
+      alert("Hubo un error al generar el PDF. Revisa que la página haya cargado completamente.");
       btn.disabled = false;
       btn.innerText = "📄 Generar PDF";
     });
