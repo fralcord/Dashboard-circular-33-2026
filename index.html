@@ -5,38 +5,23 @@
   <title>Control Circular 33 - Los Lagos 2026</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  
   <style>
     :root { 
-      --blue-lagos: #004a87; 
-      --green-rec: #10b981; 
-      --orange-obs: #f59e0b; 
-      --purple-tram: #6f42c1; 
-      --gray-oth: #6c757d; 
-      --reev: #d946ef;
-      --cyan-tram: #0dcaf0;
+      --blue-lagos: #004a87; --green-rec: #10b981; --orange-obs: #f59e0b; 
+      --purple-tram: #6f42c1; --gray-oth: #6c757d; --reev: #d946ef; --cyan-tram: #0dcaf0;
     }
     body { background-color: #f8fafc; font-family: 'Segoe UI', sans-serif; padding: 10px; }
     .main-header { background: linear-gradient(135deg, var(--blue-lagos), #0072bc); color: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; }
-    
-    .kpi-unified { background: white; border-radius: 12px; border-top: 5px solid var(--green-rec); box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; overflow: hidden; }
+    .kpi-unified { background: white; border-radius: 12px; border-top: 5px solid var(--green-rec); box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; overflow: hidden; height: 100%; }
     .kpi-section { flex: 1; padding: 20px; text-align: center; }
-    
     .status-card { border-radius: 12px; padding: 15px; color: white; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 140px; }
-    .bg-obs { background: var(--orange-obs); } 
-    .bg-reev { background: var(--reev); } 
-    .bg-tram-rec { background: var(--cyan-tram); color: #000; } 
-    .bg-tram-obs { background: var(--purple-tram); }
+    .bg-obs { background: var(--orange-obs); } .bg-reev { background: var(--reev); } 
+    .bg-tram-rec { background: var(--cyan-tram); color: #000; } .bg-tram-obs { background: var(--purple-tram); }
     .bg-oth { background: var(--gray-oth); }
-    
     .cant-proyectos { font-size: 1.8rem; font-weight: bold; }
     .disclaimer { font-size: 0.75rem; color: #6c757d; font-style: italic; }
-    .status-title { font-size: 0.85rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; height: 2.5rem; display: block; }
-    
-    @media print {
-      .no-print { display: none !important; }
-      .container-fluid { width: 100%; padding: 0; }
-    }
+    .status-title { font-size: 0.82rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; height: 2.5rem; display: block; }
+    @media print { .no-print { display: none !important; } }
   </style>
 </head>
 <body>
@@ -53,8 +38,8 @@
       <p class="mb-0 opacity-75">Gobierno Regional de Los Lagos - 2026</p>
     </div>
     <div class="d-flex gap-2 no-print">
-      <button class="btn btn-danger btn-sm fw-bold" id="btnPDF">📄 Generar PDF</button>
-      <button class="btn btn-light btn-sm fw-bold" id="btnActualizar">🔄 Actualizar</button>
+      <button class="btn btn-danger btn-sm fw-bold shadow-sm" id="btnPDF">📄 Generar PDF</button>
+      <button class="btn btn-light btn-sm fw-bold shadow-sm" id="btnActualizar">🔄 Actualizar</button>
     </div>
   </div>
 
@@ -68,7 +53,7 @@
         </div>
         <div style="width: 1px; background: #e2e8f0; margin: 15px 0;"></div>
         <div class="kpi-section">
-          <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE (RT)</div>
+          <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE</div>
           <h2 id="kpiRec" class="text-success mt-1" style="font-weight: 800;">0</h2>
           <div class="small text-muted">Proyectos "Cumple RT"</div>
         </div>
@@ -114,16 +99,14 @@
 <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbzslo__5lmVv9l2GFrEjKeQ_IgP8wneeqDddXTXWfd_kVjNAU7KnF1HdLarRAOTZCFP/exec"; 
   let DB = [];
-  // Mapeo exacto según image_f7a26e
+  // Índices verificados en image_f7a26e: Pro:5, Com:6, For:7, Bip:8, Nom:9, Costo:10, Est:12, Reev:27
   const IDX = { pro: 5, com: 6, for: 7, cod: 8, nom: 9, mon: 10, est: 12, reev: 27 };
 
   async function init() {
     try {
       const response = await fetch(API_URL);
       const data = await response.json();
-      
-      // Filtrado de encabezados robusto
-      DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().toUpperCase() !== "BIP" && r[IDX.cod].toString().trim() !== "");
+      DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().toUpperCase() !== "BIP");
       
       poblarProvincias();
       actualizarComunas();
@@ -131,13 +114,12 @@
       document.getElementById('loader').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
       
-      // Asignación de botones reparada
       document.getElementById('btnActualizar').onclick = () => window.location.reload();
       document.getElementById('btnPDF').onclick = exportarPDF;
       
     } catch (e) { 
-      console.error("Error en init:", e);
-      document.getElementById('loader').innerHTML = '<div class="alert alert-danger m-3">Error al conectar con los datos. Revisa la consola.</div>';
+      console.error(e);
+      document.getElementById('loader').innerHTML = '<div class="alert alert-danger">Error de conexión. Reintentando...</div>';
     }
   }
 
@@ -150,9 +132,8 @@
 
   function actualizarComunas() {
     const provSel = document.getElementById('selProv').value;
-    const filteredDB = provSel === "ALL" ? DB : DB.filter(r => r[IDX.pro]?.toString().trim() === provSel);
-    const list = [...new Set(filteredDB.map(r => r[idx_comuna = IDX.com]?.toString().trim()))].filter(x => x).sort();
-    
+    const filtered = provSel === "ALL" ? DB : DB.filter(r => r[IDX.pro]?.toString().trim() === provSel);
+    const list = [...new Set(filtered.map(r => r[IDX.com]?.toString().trim()))].filter(x => x).sort();
     let el = document.getElementById('selComuna');
     el.innerHTML = '<option value="ALL">Todas las Comunas</option>';
     list.forEach(v => el.innerHTML += `<option value="${v}">${v}</option>`);
@@ -162,15 +143,12 @@
   const f_miles = (n) => "$" + (Math.round(n / 1000)).toLocaleString('es-CL');
 
   function render() {
-    const fP = document.getElementById('selProv').value;
-    const fC = document.getElementById('selComuna').value;
-    const search = document.getElementById('busqueda').value.toLowerCase();
+    const fP = document.getElementById('selProv').value, fC = document.getElementById('selComuna').value,
+          search = document.getElementById('busqueda').value.toLowerCase();
 
     const rows = DB.filter(r => {
-      const valP = r[IDX.pro]?.toString().trim() || "";
-      const valC = r[IDX.com]?.toString().trim() || "";
-      const matchP = fP === "ALL" || valP === fP;
-      const matchC = fC === "ALL" || valC === fC;
+      const matchP = fP === "ALL" || r[IDX.pro]?.toString().trim() === fP;
+      const matchC = fC === "ALL" || r[IDX.com]?.toString().trim() === fC;
       const matchS = r[IDX.nom]?.toString().toLowerCase().includes(search) || 
                      r[IDX.cod]?.toString().toLowerCase().includes(search) || 
                      r[IDX.for]?.toString().toLowerCase().includes(search);
@@ -183,6 +161,7 @@
     rows.forEach(r => {
       const val = parseInt(r[IDX.mon]) || 0;
       const est = (r[IDX.est] || "").toString().trim().toUpperCase();
+      // Verificación estricta de columna 27 para reevaluación
       const rv = (r[IDX.reev] || "").toString().trim().toUpperCase() === "SI";
 
       if (est.includes("CUMPLE RT")) { countRT++; totalC += val; }
@@ -193,17 +172,12 @@
       else if (est === "FIRMA OBS") s.tramObs++;
       else if (!est.includes("CUMPLE RT")) s.oth++;
 
-      let badge = est.includes('RT') ? 'bg-success' : (est.includes('OBS') ? 'bg-warning text-dark' : 'bg-secondary');
-
       html += `<tr>
-        <td>${r[IDX.cod]}</td>
-        <td><strong>${r[IDX.nom]}</strong></td>
-        <td>${r[IDX.for] || '-'}</td>
-        <td>${r[IDX.pro]}</td>
-        <td>${r[IDX.com]}</td>
+        <td>${r[IDX.cod]}</td><td><strong>${r[IDX.nom]}</strong></td><td>${r[IDX.for] || '-'}</td>
+        <td>${r[IDX.pro]}</td><td>${r[IDX.com]}</td>
         <td class="text-center">${rv ? '✅' : '❌'}</td>
         <td class="text-end fw-bold text-primary">${f_miles(val)}</td>
-        <td><span class="badge ${badge}">${est || 'PENDIENTE'}</span></td>
+        <td><span class="badge ${est.includes('RT')?'bg-success':'bg-secondary'}">${est || 'PENDIENTE'}</span></td>
       </tr>`;
     });
 
@@ -211,7 +185,6 @@
     document.getElementById('kpiCosto').innerText = f_miles(totalC);
     document.getElementById('kpiRec').innerText = countRT;
     document.getElementById('kpiCount').innerText = rows.length;
-    
     document.getElementById('cardTramRecCant').innerText = s.tramRec;
     document.getElementById('cardReevMonto').innerText = f_miles(s.reevM);
     document.getElementById('cardReevCant').innerText = s.reevC;
@@ -223,29 +196,18 @@
   function exportarPDF() {
     const element = document.getElementById('dashboard');
     const btn = document.getElementById('btnPDF');
-    
-    btn.disabled = true;
-    btn.innerText = "⏳ Generando...";
-
+    btn.disabled = true; btn.innerText = "⏳ Generando...";
     const opt = { 
-      margin: 5, 
-      filename: 'Reporte_Circular33_2026.pdf', 
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false }, 
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
+      margin: 5, filename: 'Reporte_Circular33_2026.pdf', image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
     };
-    
     html2pdf().set(opt).from(element).save().then(() => {
-      btn.disabled = false;
-      btn.innerText = "📄 Generar PDF";
-    }).catch(err => {
-      console.error("Error PDF:", err);
-      alert("Hubo un error al generar el PDF. Revisa que la página haya cargado completamente.");
-      btn.disabled = false;
-      btn.innerText = "📄 Generar PDF";
+      btn.disabled = false; btn.innerText = "📄 Generar PDF";
+    }).catch(() => {
+      btn.disabled = false; btn.innerText = "📄 Generar PDF";
+      alert("Error al generar PDF. Intenta nuevamente.");
     });
   }
-
   init();
 </script>
 </body>
