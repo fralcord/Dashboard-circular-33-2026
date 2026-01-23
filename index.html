@@ -98,15 +98,16 @@
 </div>
 
 <script>
+  // URL de tu implementación verificada
   const API_URL = "https://script.google.com/macros/s/AKfycbzslo__5lmVv9l2GFrEjKeQ_IgP8wneeqDddXTXWfd_kVjNAU7KnF1HdLarRAOTZCFP/exec"; 
   let DB = [];
-  // Índices verificados en tus datos reales
+  // Índices actualizados según image_f7a26e: Reevaluación está en la columna 28 (Índice 27)
   const IDX = { pro: 5, com: 6, for: 7, cod: 8, nom: 9, mon: 10, est: 12, reev: 27 };
 
   async function init() {
     try {
-      const response = await fetch(API_URL);
-      const data = await response.json();
+      const resp = await fetch(API_URL);
+      const data = await resp.json();
       DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().toUpperCase() !== "BIP");
       
       poblarProvincias();
@@ -115,13 +116,13 @@
       document.getElementById('loader').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
       
-      // Eventos de botones
+      // Asignación de botones independiente
       document.getElementById('btnActualizar').onclick = () => window.location.reload();
       document.getElementById('btnPDF').onclick = exportarPDF;
       
     } catch (e) { 
       console.error(e); 
-      document.getElementById('loader').innerHTML = '<div class="alert alert-danger m-3">Error al cargar datos. Refresca la página.</div>';
+      document.getElementById('loader').innerHTML = '<div class="alert alert-danger m-3">Error al conectar con los datos. Intenta refrescar.</div>';
     }
   }
 
@@ -149,8 +150,10 @@
           search = document.getElementById('busqueda').value.toLowerCase();
 
     const rows = DB.filter(r => {
-      const matchP = fP === "ALL" || r[IDX.pro]?.toString().trim() === fP;
-      const matchC = fC === "ALL" || r[IDX.com]?.toString().trim() === fC;
+      const valP = r[IDX.pro]?.toString().trim() || "";
+      const valC = r[IDX.com]?.toString().trim() || "";
+      const matchP = fP === "ALL" || valP === fP;
+      const matchC = fC === "ALL" || valC === fC;
       const matchS = r[IDX.nom]?.toString().toLowerCase().includes(search) || 
                      r[IDX.cod]?.toString().toLowerCase().includes(search) || 
                      r[IDX.for]?.toString().toLowerCase().includes(search);
@@ -163,7 +166,7 @@
     rows.forEach(r => {
       const val = parseInt(r[IDX.mon]) || 0;
       const est = (r[IDX.est] || "").toString().trim().toUpperCase();
-      // Verificación de Columna 27 (AB) para Reevaluación
+      // Verificación estricta de Columna 27 (AB) para Reevaluación
       const rv = (r[IDX.reev] || "").toString().trim().toUpperCase() === "SI";
 
       if (est.includes("CUMPLE RT")) { countRT++; totalC += val; }
@@ -203,12 +206,12 @@
       btn.disabled = true;
       btn.innerHTML = '⏳ Generando...';
 
-      // Configuración balanceada para evitar saturación de memoria
+      // Configuración ligera para evitar saturación de memoria
       const opt = { 
-        margin: 8, 
+        margin: 5, 
         filename: 'Reporte_Circular33_2026.pdf', 
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 1.5, useCORS: true, logging: false }, 
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 1.0, useCORS: true, logging: false }, 
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
       };
       
@@ -217,7 +220,7 @@
       console.error("Error al generar PDF:", err);
       alert("Error técnico al generar el PDF. Refresca la página e intenta de nuevo.");
     } finally {
-      // Este bloque siempre se ejecuta, re-activando los botones
+      // Este bloque se ejecuta SIEMPRE, reactivando los botones
       btn.disabled = false;
       btn.innerHTML = '📄 Generar PDF';
     }
