@@ -22,6 +22,9 @@
     .cant-proyectos { font-size: 1.8rem; font-weight: bold; }
     .disclaimer { font-size: 0.75rem; color: #6c757d; font-style: italic; }
     .status-title { font-size: 0.82rem; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; height: 2.5rem; display: block; }
+    
+    /* Estilos para impresión y clonado PDF */
+    .pdf-mode { background: white !important; padding: 20px !important; width: 1000px !important; }
     @media print { .no-print { display: none !important; } }
   </style>
 </head>
@@ -44,27 +47,48 @@
     </div>
   </div>
 
-  <div class="row g-3 mb-4">
-    <div class="col-lg-8">
-      <div class="kpi-unified">
-        <div class="kpi-section">
-          <div class="text-muted small fw-bold">COSTO TOTAL (M$)</div>
-          <h2 id="kpiCosto" class="mt-1" style="color: var(--blue-lagos); font-weight: 800;">$ 0</h2>
-          <div class="disclaimer">*Valores en miles de pesos</div>
+  <div id="reportArea">
+    <div class="row g-3 mb-4">
+      <div class="col-lg-8">
+        <div class="kpi-unified">
+          <div class="kpi-section">
+            <div class="text-muted small fw-bold">COSTO TOTAL (M$)</div>
+            <h2 id="kpiCosto" class="mt-1" style="color: var(--blue-lagos); font-weight: 800;">$ 0</h2>
+            <div class="disclaimer">*Valores en miles de pesos</div>
+          </div>
+          <div style="width: 1px; background: #e2e8f0; margin: 15px 0;"></div>
+          <div class="kpi-section">
+            <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE</div>
+            <h2 id="kpiRec" class="text-success mt-1" style="font-weight: 800;">0</h2>
+            <div class="small text-muted">Proyectos "Cumple RT"</div>
+          </div>
         </div>
-        <div style="width: 1px; background: #e2e8f0; margin: 15px 0;"></div>
-        <div class="kpi-section">
-          <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE</div>
-          <h2 id="kpiRec" class="text-success mt-1" style="font-weight: 800;">0</h2>
-          <div class="small text-muted">Proyectos "Cumple RT"</div>
+      </div>
+      <div class="col-lg-4">
+        <div class="status-card bg-white text-dark border-top border-primary border-5">
+          <div class="text-muted small fw-bold">UNIVERSO TOTAL</div>
+          <h2 id="kpiCount" class="mt-1" style="font-weight: 800;">0</h2>
+          <div class="small text-muted">Proyectos cargados</div>
         </div>
       </div>
     </div>
-    <div class="col-lg-4">
-      <div class="status-card bg-white text-dark border-top border-primary border-5">
-        <div class="text-muted small fw-bold">UNIVERSO TOTAL</div>
-        <h2 id="kpiCount" class="mt-1" style="font-weight: 800;">0</h2>
-        <div class="small text-muted">Proyectos cargados</div>
+
+    <div class="row g-2 mb-4">
+      <div class="col"><div class="status-card bg-tram-rec"><span class="status-title">Trámite para recomendación</span><div id="cardTramRecCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
+      <div class="col"><div class="status-card bg-reev"><span class="status-title">En Reevaluación</span><h4 id="cardReevMonto" style="font-size: 1.1rem;">$ 0</h4><div id="cardReevCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
+      <div class="col"><div class="status-card bg-obs"><span class="status-title">Observados</span><div id="cardObsCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
+      <div class="col"><div class="status-card bg-tram-obs"><span class="status-title">Trámite para observación</span><div id="cardTramObsCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
+      <div class="col"><div class="status-card bg-oth"><span class="status-title">En Evaluación / Otros</span><div id="cardOthCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
+    </div>
+
+    <div class="table-container mb-5 bg-white p-3 rounded shadow-sm">
+      <div class="table-responsive">
+        <table class="table table-hover table-sm align-middle" style="font-size: 0.75rem;">
+          <thead class="table-dark">
+            <tr><th>BIP</th><th>Nombre</th><th>Formulador</th><th>Provincia</th><th>Comuna</th><th>Reev.</th><th class="text-end">Monto (M$)</th><th>Estado</th></tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -76,32 +100,11 @@
       <div class="col-md-6"><input type="text" id="busqueda" class="form-control" placeholder="Buscar BIP, Nombre o Formulador..." onkeyup="render()"></div>
     </div>
   </div>
-
-  <div class="row g-2 mb-4">
-    <div class="col"><div class="status-card bg-tram-rec"><span class="status-title">Trámite para recomendación</span><div id="cardTramRecCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
-    <div class="col"><div class="status-card bg-reev"><span class="status-title">En Reevaluación</span><h4 id="cardReevMonto" style="font-size: 1.1rem;">$ 0</h4><div id="cardReevCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
-    <div class="col"><div class="status-card bg-obs"><span class="status-title">Observados</span><div id="cardObsCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
-    <div class="col"><div class="status-card bg-tram-obs"><span class="status-title">Trámite para observación</span><div id="cardTramObsCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
-    <div class="col"><div class="status-card bg-oth"><span class="status-title">En Evaluación / Otros</span><div id="cardOthCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
-  </div>
-
-  <div class="table-container mb-5 bg-white p-3 rounded shadow-sm">
-    <div class="table-responsive">
-      <table class="table table-hover table-sm align-middle" style="font-size: 0.8rem;">
-        <thead class="table-dark">
-          <tr><th>BIP</th><th>Nombre</th><th>Formulador</th><th>Provincia</th><th>Comuna</th><th>Reev.</th><th class="text-end">Monto (M$)</th><th>Estado</th></tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-    </div>
-  </div>
 </div>
 
 <script>
-  // URL de tu implementación verificada
   const API_URL = "https://script.google.com/macros/s/AKfycbzslo__5lmVv9l2GFrEjKeQ_IgP8wneeqDddXTXWfd_kVjNAU7KnF1HdLarRAOTZCFP/exec"; 
   let DB = [];
-  // Índices actualizados según image_f7a26e: Reevaluación está en la columna 28 (Índice 27)
   const IDX = { pro: 5, com: 6, for: 7, cod: 8, nom: 9, mon: 10, est: 12, reev: 27 };
 
   async function init() {
@@ -109,21 +112,14 @@
       const resp = await fetch(API_URL);
       const data = await resp.json();
       DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().toUpperCase() !== "BIP");
-      
       poblarProvincias();
       actualizarComunas();
-      
       document.getElementById('loader').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
       
-      // Asignación de botones independiente
       document.getElementById('btnActualizar').onclick = () => window.location.reload();
       document.getElementById('btnPDF').onclick = exportarPDF;
-      
-    } catch (e) { 
-      console.error(e); 
-      document.getElementById('loader').innerHTML = '<div class="alert alert-danger m-3">Error al conectar con los datos. Intenta refrescar.</div>';
-    }
+    } catch (e) { console.error(e); }
   }
 
   function poblarProvincias() {
@@ -150,10 +146,8 @@
           search = document.getElementById('busqueda').value.toLowerCase();
 
     const rows = DB.filter(r => {
-      const valP = r[IDX.pro]?.toString().trim() || "";
-      const valC = r[IDX.com]?.toString().trim() || "";
-      const matchP = fP === "ALL" || valP === fP;
-      const matchC = fC === "ALL" || valC === fC;
+      const matchP = fP === "ALL" || r[IDX.pro]?.toString().trim() === fP;
+      const matchC = fC === "ALL" || r[IDX.com]?.toString().trim() === fC;
       const matchS = r[IDX.nom]?.toString().toLowerCase().includes(search) || 
                      r[IDX.cod]?.toString().toLowerCase().includes(search) || 
                      r[IDX.for]?.toString().toLowerCase().includes(search);
@@ -166,7 +160,6 @@
     rows.forEach(r => {
       const val = parseInt(r[IDX.mon]) || 0;
       const est = (r[IDX.est] || "").toString().trim().toUpperCase();
-      // Verificación estricta de Columna 27 (AB) para Reevaluación
       const rv = (r[IDX.reev] || "").toString().trim().toUpperCase() === "SI";
 
       if (est.includes("CUMPLE RT")) { countRT++; totalC += val; }
@@ -177,13 +170,7 @@
       else if (est === "FIRMA OBS") s.tramObs++;
       else if (!est.includes("CUMPLE RT")) s.oth++;
 
-      html += `<tr>
-        <td>${r[IDX.cod]}</td><td><strong>${r[IDX.nom]}</strong></td><td>${r[IDX.for] || '-'}</td>
-        <td>${r[IDX.pro]}</td><td>${r[IDX.com]}</td>
-        <td class="text-center">${rv ? '✅' : '❌'}</td>
-        <td class="text-end fw-bold text-primary">${f_miles(val)}</td>
-        <td><span class="badge ${est.includes('RT')?'bg-success':'bg-secondary'}">${est || 'PENDIENTE'}</span></td>
-      </tr>`;
+      html += `<tr><td>${r[IDX.cod]}</td><td><strong>${r[IDX.nom]}</strong></td><td>${r[IDX.for] || '-'}</td><td>${r[IDX.pro]}</td><td>${r[IDX.com]}</td><td class="text-center">${rv ? '✅' : '❌'}</td><td class="text-end fw-bold text-primary">${f_miles(val)}</td><td><span class="badge ${est.includes('RT')?'bg-success':'bg-secondary'}">${est}</span></td></tr>`;
     });
 
     document.getElementById('tableBody').innerHTML = html;
@@ -198,33 +185,41 @@
     document.getElementById('cardOthCant').innerText = s.oth;
   }
 
-  async function exportarPDF() {
+  // FUNCIÓN PDF REPARADA CON AUTORESCATE
+  function exportarPDF() {
     const btn = document.getElementById('btnPDF');
-    const element = document.getElementById('dashboard');
+    const originalElement = document.getElementById('reportArea');
     
-    try {
-      btn.disabled = true;
-      btn.innerHTML = '⏳ Generando...';
+    // 1. Bloqueo de UI
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Procesando...';
 
-      // Configuración ligera para evitar saturación de memoria
-      const opt = { 
-        margin: 5, 
-        filename: 'Reporte_Circular33_2026.pdf', 
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 1.0, useCORS: true, logging: false }, 
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
-      };
-      
-      await html2pdf().set(opt).from(element).save();
-    } catch (err) {
-      console.error("Error al generar PDF:", err);
-      alert("Error técnico al generar el PDF. Refresca la página e intenta de nuevo.");
-    } finally {
-      // Este bloque se ejecuta SIEMPRE, reactivando los botones
-      btn.disabled = false;
-      btn.innerHTML = '📄 Generar PDF';
-    }
+    // 2. Crear un CLON del reporte para no saturar el original
+    const clone = originalElement.cloneNode(true);
+    clone.classList.add('pdf-mode');
+    
+    // Ajuste de estilos en el clon para PDF
+    const options = { 
+      margin: 10, 
+      filename: 'Reporte_Iniciativas_2026.pdf', 
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 1.2, useCORS: true, letterRendering: true }, 
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
+    };
+
+    // 3. Ejecutar generación con manejo de errores estricto
+    html2pdf().set(options).from(clone).toPdf().get('pdf').save().then(() => {
+        console.log("PDF generado con éxito");
+    }).catch(err => {
+        console.error("Fallo de PDF:", err);
+        alert("Error al generar PDF. Use 'Imprimir' del navegador (Ctrl+P) si el problema persiste.");
+    }).finally(() => {
+        // 4. EL PASO CRÍTICO: Siempre reactivar los botones
+        btn.disabled = false;
+        btn.innerHTML = '📄 Generar PDF';
+    });
   }
+
   init();
 </script>
 </body>
