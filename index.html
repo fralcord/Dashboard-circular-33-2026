@@ -54,7 +54,7 @@
         </div>
         <div style="width: 1px; background: #e2e8f0; margin: 15px 0;"></div>
         <div class="kpi-section">
-          <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE (RT)</div>
+          <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE</div>
           <h2 id="kpiRec" class="text-success mt-1" style="font-weight: 800;">0</h2>
           <div class="small text-muted">Proyectos "Cumple RT"</div>
         </div>
@@ -98,16 +98,15 @@
 </div>
 
 <script>
-  // URL de tu implementación verificada
   const API_URL = "https://script.google.com/macros/s/AKfycbzslo__5lmVv9l2GFrEjKeQ_IgP8wneeqDddXTXWfd_kVjNAU7KnF1HdLarRAOTZCFP/exec"; 
   let DB = [];
-  // Índices actualizados según image_f7a26e: Reev es el índice 27
+  // Índices verificados en tus datos reales
   const IDX = { pro: 5, com: 6, for: 7, cod: 8, nom: 9, mon: 10, est: 12, reev: 27 };
 
   async function init() {
     try {
-      const resp = await fetch(API_URL);
-      const data = await resp.json();
+      const response = await fetch(API_URL);
+      const data = await response.json();
       DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().toUpperCase() !== "BIP");
       
       poblarProvincias();
@@ -116,13 +115,13 @@
       document.getElementById('loader').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
       
-      // Asignación de botones fuera de toda lógica de PDF
-      document.getElementById('btnActualizar').addEventListener('click', () => window.location.reload());
-      document.getElementById('btnPDF').addEventListener('click', exportarPDF);
+      // Eventos de botones
+      document.getElementById('btnActualizar').onclick = () => window.location.reload();
+      document.getElementById('btnPDF').onclick = exportarPDF;
       
     } catch (e) { 
       console.error(e); 
-      document.getElementById('loader').innerHTML = '<div class="alert alert-danger m-3">Error al conectar con los datos. Intenta refrescar.</div>';
+      document.getElementById('loader').innerHTML = '<div class="alert alert-danger m-3">Error al cargar datos. Refresca la página.</div>';
     }
   }
 
@@ -150,10 +149,8 @@
           search = document.getElementById('busqueda').value.toLowerCase();
 
     const rows = DB.filter(r => {
-      const valP = r[IDX.pro]?.toString().trim() || "";
-      const valC = r[IDX.com]?.toString().trim() || "";
-      const matchP = fP === "ALL" || valP === fP;
-      const matchC = fC === "ALL" || valC === fC;
+      const matchP = fP === "ALL" || r[IDX.pro]?.toString().trim() === fP;
+      const matchC = fC === "ALL" || r[IDX.com]?.toString().trim() === fC;
       const matchS = r[IDX.nom]?.toString().toLowerCase().includes(search) || 
                      r[IDX.cod]?.toString().toLowerCase().includes(search) || 
                      r[IDX.for]?.toString().toLowerCase().includes(search);
@@ -198,32 +195,32 @@
     document.getElementById('cardOthCant').innerText = s.oth;
   }
 
-  function exportarPDF() {
+  async function exportarPDF() {
     const btn = document.getElementById('btnPDF');
     const element = document.getElementById('dashboard');
     
-    btn.disabled = true;
-    btn.innerHTML = '⏳ Generando...';
+    try {
+      btn.disabled = true;
+      btn.innerHTML = '⏳ Generando...';
 
-    const opt = { 
-      margin: 8, 
-      filename: 'Reporte_Circular33_2026.pdf', 
-      image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 1.5, useCORS: true, logging: false }, 
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
-    };
-    
-    html2pdf().set(opt).from(element).save()
-      .then(() => {
-        btn.disabled = false;
-        btn.innerHTML = '📄 Generar PDF';
-      })
-      .catch((err) => {
-        console.error("Error PDF:", err);
-        alert("Error técnico al generar el PDF. Refresca la página e intenta de nuevo.");
-        btn.disabled = false;
-        btn.innerHTML = '📄 Generar PDF';
-      });
+      // Configuración balanceada para evitar saturación de memoria
+      const opt = { 
+        margin: 8, 
+        filename: 'Reporte_Circular33_2026.pdf', 
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 1.5, useCORS: true, logging: false }, 
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
+      };
+      
+      await html2pdf().set(opt).from(element).save();
+    } catch (err) {
+      console.error("Error al generar PDF:", err);
+      alert("Error técnico al generar el PDF. Refresca la página e intenta de nuevo.");
+    } finally {
+      // Este bloque siempre se ejecuta, re-activando los botones
+      btn.disabled = false;
+      btn.innerHTML = '📄 Generar PDF';
+    }
   }
   init();
 </script>
