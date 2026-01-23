@@ -54,7 +54,7 @@
         </div>
         <div style="width: 1px; background: #e2e8f0; margin: 15px 0;"></div>
         <div class="kpi-section">
-          <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE</div>
+          <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE (RT)</div>
           <h2 id="kpiRec" class="text-success mt-1" style="font-weight: 800;">0</h2>
           <div class="small text-muted">Proyectos "Cumple RT"</div>
         </div>
@@ -98,9 +98,10 @@
 </div>
 
 <script>
+  // URL de tu implementación verificada
   const API_URL = "https://script.google.com/macros/s/AKfycbzslo__5lmVv9l2GFrEjKeQ_IgP8wneeqDddXTXWfd_kVjNAU7KnF1HdLarRAOTZCFP/exec"; 
   let DB = [];
-  // Índices verificados
+  // Índices actualizados según image_f7a26e: Reev es el índice 27
   const IDX = { pro: 5, com: 6, for: 7, cod: 8, nom: 9, mon: 10, est: 12, reev: 27 };
 
   async function init() {
@@ -115,11 +116,14 @@
       document.getElementById('loader').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
       
-      // Asignación directa de eventos
-      document.getElementById('btnActualizar').onclick = () => window.location.reload();
-      document.getElementById('btnPDF').onclick = exportarPDF;
+      // Asignación de botones fuera de toda lógica de PDF
+      document.getElementById('btnActualizar').addEventListener('click', () => window.location.reload());
+      document.getElementById('btnPDF').addEventListener('click', exportarPDF);
       
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+      console.error(e); 
+      document.getElementById('loader').innerHTML = '<div class="alert alert-danger m-3">Error al conectar con los datos. Intenta refrescar.</div>';
+    }
   }
 
   function poblarProvincias() {
@@ -146,8 +150,10 @@
           search = document.getElementById('busqueda').value.toLowerCase();
 
     const rows = DB.filter(r => {
-      const matchP = fP === "ALL" || r[IDX.pro]?.toString().trim() === fP;
-      const matchC = fC === "ALL" || r[IDX.com]?.toString().trim() === fC;
+      const valP = r[IDX.pro]?.toString().trim() || "";
+      const valC = r[IDX.com]?.toString().trim() || "";
+      const matchP = fP === "ALL" || valP === fP;
+      const matchC = fC === "ALL" || valC === fC;
       const matchS = r[IDX.nom]?.toString().toLowerCase().includes(search) || 
                      r[IDX.cod]?.toString().toLowerCase().includes(search) || 
                      r[IDX.for]?.toString().toLowerCase().includes(search);
@@ -160,7 +166,7 @@
     rows.forEach(r => {
       const val = parseInt(r[IDX.mon]) || 0;
       const est = (r[IDX.est] || "").toString().trim().toUpperCase();
-      // Corrección del índice 27 para reevaluación
+      // Verificación de Columna 27 (AB) para Reevaluación
       const rv = (r[IDX.reev] || "").toString().trim().toUpperCase() === "SI";
 
       if (est.includes("CUMPLE RT")) { countRT++; totalC += val; }
@@ -197,27 +203,26 @@
     const element = document.getElementById('dashboard');
     
     btn.disabled = true;
-    btn.innerText = "⏳ Generando...";
+    btn.innerHTML = '⏳ Generando...';
 
-    // Configuración optimizada para evitar errores
     const opt = { 
-      margin: 10,
-      filename: 'Reporte_Circular33_2026.pdf',
+      margin: 8, 
+      filename: 'Reporte_Circular33_2026.pdf', 
       image: { type: 'jpeg', quality: 0.95 },
-      html2canvas: { scale: 1.5, useCORS: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+      html2canvas: { scale: 1.5, useCORS: true, logging: false }, 
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
     };
     
     html2pdf().set(opt).from(element).save()
       .then(() => {
         btn.disabled = false;
-        btn.innerText = "📄 Generar PDF";
+        btn.innerHTML = '📄 Generar PDF';
       })
       .catch((err) => {
-        console.error(err);
-        alert("Error técnico al generar PDF. Refresca la página e intenta de nuevo.");
+        console.error("Error PDF:", err);
+        alert("Error técnico al generar el PDF. Refresca la página e intenta de nuevo.");
         btn.disabled = false;
-        btn.innerText = "📄 Generar PDF";
+        btn.innerHTML = '📄 Generar PDF';
       });
   }
   init();
