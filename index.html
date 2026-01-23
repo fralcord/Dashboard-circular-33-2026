@@ -12,44 +12,47 @@
       --blue-lagos: #004a87; --green-rec: #10b981; --orange-obs: #f59e0b; 
       --purple-tram: #6f42c1; --gray-oth: #6c757d; --reev: #d946ef; --cyan-tram: #0dcaf0;
     }
-    body { background-color: #f8fafc; font-family: 'Segoe UI', sans-serif; padding: 5px; }
+    body { background-color: #f8fafc; font-family: 'Segoe UI', sans-serif; padding: 10px; font-size: 1rem; }
     
-    /* Header Adaptable */
+    /* Header Principal */
     .main-header { 
       background: linear-gradient(135deg, var(--blue-lagos), #0072bc); 
-      color: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; 
+      color: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; 
     }
 
-    /* Ajustes de filtros para móviles */
+    /* Tarjetas KPI y Filtros */
     .filter-card { 
-      background: white; border-radius: 12px; padding: 15px; 
+      background: white; border-radius: 12px; padding: 20px; 
       margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
       border-left: 5px solid var(--blue-lagos);
     }
 
-    /* KPI Unificado Responsivo */
     .kpi-unified { 
       background: white; border-radius: 12px; border-top: 5px solid var(--green-rec); 
       box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; flex-wrap: wrap; overflow: hidden; height: 100%; 
     }
-    .kpi-section { flex: 1; min-width: 150px; padding: 15px; text-align: center; }
+    .kpi-section { flex: 1; min-width: 200px; padding: 20px; text-align: center; }
 
-    /* Tarjetas de Estado Adaptables */
-    .status-card { border-radius: 12px; padding: 15px; color: white; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 120px; }
+    /* Tarjetas de Estado */
+    .status-card { border-radius: 12px; padding: 15px; color: white; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); min-height: 130px; }
     .bg-obs { background: var(--orange-obs); } 
     .bg-reev { background: var(--reev); } 
     .bg-tram-rec { background: var(--cyan-tram); color: #000; } 
     .bg-tram-obs { background: var(--purple-tram); }
     .bg-oth { background: var(--gray-oth); }
     
-    .cant-proyectos { font-size: 1.5rem; font-weight: bold; }
-    .status-title { font-size: 0.75rem; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; display: block; line-height: 1.2; }
-    .disclaimer { font-size: 0.65rem; color: #6c757d; font-style: italic; }
+    .cant-proyectos { font-size: 2rem; font-weight: bold; }
+    .status-title { font-size: 0.95rem; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; display: block; line-height: 1.2; }
+    .disclaimer { font-size: 0.8rem; color: #6c757d; font-style: italic; }
+
+    /* Tabla Mejorada */
+    .table-responsive { border-radius: 12px; overflow: hidden; }
+    .table { font-size: 0.95rem; }
+    .col-iniciativa { min-width: 400px; word-wrap: break-word; white-space: normal; }
 
     @media (max-width: 768px) {
-      .main-header h2 { font-size: 1.2rem; }
-      .cant-proyectos { font-size: 1.3rem; }
-      .status-card { min-height: 100px; padding: 10px; }
+      .cant-proyectos { font-size: 1.5rem; }
+      .col-iniciativa { min-width: 250px; }
     }
 
     @media print { .no-print { display: none !important; } }
@@ -58,8 +61,8 @@
 <body>
 
 <div id="loader" class="text-center mt-5">
-  <div class="spinner-border text-primary" style="width: 2.5rem; height: 2.5rem;"></div>
-  <p class="mt-3 fw-bold text-secondary">Optimizando vista para tu dispositivo...</p>
+  <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+  <p class="mt-3 fw-bold text-secondary">Cargando datos con mayor visibilidad...</p>
 </div>
 
 <div id="dashboard" style="display:none;" class="container-fluid">
@@ -68,28 +71,28 @@
     <div class="row align-items-center">
       <div class="col-12 col-md-8 text-center text-md-start mb-3 mb-md-0">
         <h2 class="mb-0">Gestión Circular 33</h2>
-        <p class="mb-0 opacity-75 small">Gobierno Regional de Los Lagos - 2026</p>
+        <p class="mb-0 opacity-75">Gobierno Regional de Los Lagos - Reporte 2026</p>
       </div>
       <div class="col-12 col-md-4 d-flex justify-content-center justify-content-md-end gap-2 no-print">
-        <button class="btn btn-danger btn-sm fw-bold shadow-sm" id="btnPDF">📄 PDF</button>
-        <button class="btn btn-light btn-sm fw-bold shadow-sm" id="btnActualizar">🔄 Refrescar</button>
+        <button class="btn btn-danger btn-lg fw-bold shadow-sm" id="btnPDF">📄 Generar PDF</button>
+        <button class="btn btn-light btn-lg fw-bold shadow-sm" id="btnActualizar">🔄 Refrescar</button>
       </div>
     </div>
   </div>
 
   <div class="filter-card no-print">
-    <div class="row g-2">
-      <div class="col-6 col-md-3">
-        <label class="small fw-bold text-muted">Provincia</label>
-        <select id="selProv" class="form-select form-select-sm" onchange="actualizarComunas()"></select>
+    <div class="row g-3">
+      <div class="col-12 col-md-3">
+        <label class="fw-bold text-muted mb-1">Provincia</label>
+        <select id="selProv" class="form-select form-select-lg" onchange="actualizarComunas()"></select>
       </div>
-      <div class="col-6 col-md-3">
-        <label class="small fw-bold text-muted">Comuna</label>
-        <select id="selComuna" class="form-select form-select-sm" onchange="render()"></select>
+      <div class="col-12 col-md-3">
+        <label class="fw-bold text-muted mb-1">Comuna</label>
+        <select id="selComuna" class="form-select form-select-lg" onchange="render()"></select>
       </div>
       <div class="col-12 col-md-6">
-        <label class="small fw-bold text-muted">Búsqueda</label>
-        <input type="text" id="busqueda" class="form-control form-control-sm" placeholder="BIP, Nombre o Formulador..." onkeyup="render()">
+        <label class="fw-bold text-muted mb-1">Búsqueda</label>
+        <input type="text" id="busqueda" class="form-control form-control-lg" placeholder="BIP, Nombre o Formulador..." onkeyup="render()">
       </div>
     </div>
   </div>
@@ -98,46 +101,46 @@
     <div class="row g-3 mb-4">
       <div class="col-12 col-lg-8">
         <div class="kpi-unified">
-          <div class="kpi-section border-bottom border-md-0 border-end-md">
-            <div class="text-muted small fw-bold">COSTO TOTAL (M$)</div>
-            <h2 id="kpiCosto" class="mt-1 text-primary" style="font-weight: 800;">$ 0</h2>
-            <div class="disclaimer">*Miles de pesos</div>
+          <div class="kpi-section border-bottom border-lg-0 border-end-lg">
+            <div class="text-muted fw-bold">COSTO TOTAL (M$)</div>
+            <h1 id="kpiCosto" class="mt-1 text-primary" style="font-weight: 800;">$ 0</h1>
+            <div class="disclaimer">*Valores en miles de pesos</div>
           </div>
           <div class="kpi-section">
-            <div class="text-muted small fw-bold">RECOMENDADOS (RT)</div>
-            <h2 id="kpiRec" class="text-success mt-1" style="font-weight: 800;">0</h2>
-            <div class="small text-muted">Iniciativas RT</div>
+            <div class="text-muted fw-bold">RECOMENDADOS TÉCNICAMENTE (RT)</div>
+            <h1 id="kpiRec" class="text-success mt-1" style="font-weight: 800;">0</h1>
+            <div class="fw-bold text-muted small">Iniciativas RT</div>
           </div>
         </div>
       </div>
       <div class="col-12 col-lg-4">
         <div class="status-card bg-white text-dark border-top border-primary border-5 text-center">
-          <div class="text-muted small fw-bold">TOTAL PROYECTOS</div>
-          <h2 id="kpiCount" class="mt-1" style="font-weight: 800;">0</h2>
-          <div class="small text-muted">Proyectos filtrados</div>
+          <div class="text-muted fw-bold">UNIVERSO VISTO</div>
+          <h1 id="kpiCount" class="mt-1" style="font-weight: 800;">0</h1>
+          <div class="text-muted">Proyectos filtrados</div>
         </div>
       </div>
     </div>
 
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-2 mb-4 text-center">
+    <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-3 mb-4 text-center">
       <div class="col"><div class="status-card bg-tram-rec"><span class="status-title">Trámite Recomendación</span><div id="cardTramRecCant" class="cant-proyectos">0</div></div></div>
-      <div class="col"><div class="status-card bg-reev"><span class="status-title">En Reevaluación</span><div id="cardReevCant" class="cant-proyectos">0</div><div id="cardReevMonto" class="small fw-bold">$ 0</div></div></div>
+      <div class="col"><div class="status-card bg-reev"><span class="status-title">En Reevaluación</span><div id="cardReevCant" class="cant-proyectos">0</div><div id="cardReevMonto" class="fw-bold">$ 0</div></div></div>
       <div class="col"><div class="status-card bg-obs"><span class="status-title">Observados</span><div id="cardObsCant" class="cant-proyectos">0</div></div></div>
       <div class="col"><div class="status-card bg-tram-obs"><span class="status-title">Trámite Observación</span><div id="cardTramObsCant" class="cant-proyectos">0</div></div></div>
       <div class="col"><div class="status-card bg-oth"><span class="status-title">Evaluación / Otros</span><div id="cardOthCant" class="cant-proyectos">0</div></div></div>
     </div>
 
-    <div class="table-container bg-white p-2 rounded shadow-sm mb-5">
+    <div class="table-container bg-white p-3 rounded shadow-sm mb-5">
       <div class="table-responsive">
-        <table class="table table-hover table-sm align-middle" style="font-size: 0.7rem;">
+        <table class="table table-hover align-middle">
           <thead class="table-dark">
             <tr>
-              <th>BIP</th>
-              <th>Iniciativa</th>
-              <th class="d-none d-md-table-cell">Formulador</th>
+              <th style="width: 100px;">BIP</th>
+              <th class="col-iniciativa">Iniciativa</th>
+              <th>Formulador</th>
               <th class="d-none d-lg-table-cell">Provincia</th>
               <th>Comuna</th>
-              <th class="text-end">Monto (M$)</th>
+              <th class="text-end" style="width: 150px;">Monto (M$)</th>
               <th>Estado</th>
             </tr>
           </thead>
@@ -146,7 +149,6 @@
       </div>
     </div>
   </div>
-
 </div>
 
 <script>
@@ -219,13 +221,13 @@
       else if (!est.includes("CUMPLE RT")) s.oth++;
 
       html += `<tr>
-        <td>${r[IDX.cod]}</td>
-        <td class="text-truncate" style="max-width: 150px;">${r[IDX.nom]}</td>
-        <td class="d-none d-md-table-cell">${r[IDX.for] || '-'}</td>
+        <td class="fw-bold text-muted">${r[IDX.cod]}</td>
+        <td class="col-iniciativa fw-bold">${r[IDX.nom]}</td>
+        <td>${r[IDX.for] || '-'}</td>
         <td class="d-none d-lg-table-cell">${r[IDX.pro]}</td>
         <td>${r[IDX.com]}</td>
         <td class="text-end fw-bold text-primary">${f_miles(val)}</td>
-        <td><span class="badge ${est.includes('RT')?'bg-success':'bg-secondary'}" style="font-size: 0.6rem;">${est}</span></td>
+        <td><span class="badge ${est.includes('RT')?'bg-success':'bg-secondary'}" style="font-size: 0.85rem;">${est}</span></td>
       </tr>`;
     });
 
@@ -245,16 +247,16 @@
     const btn = document.getElementById('btnPDF');
     const dashboard = document.getElementById('dashboard');
     btn.disabled = true;
-    btn.innerHTML = '⏳...';
+    btn.innerHTML = '⏳ Procesando...';
 
     const clone = dashboard.cloneNode(true);
     clone.querySelectorAll('.no-print').forEach(el => el.remove());
-    clone.style.width = '1200px'; // Forzar ancho para que el PDF no salga como móvil
+    clone.style.width = '1400px';
 
     const opt = { 
-      margin: 5, filename: 'Control_Circular33_2026.pdf', 
+      margin: 5, filename: 'Reporte_Lagos_2026.pdf', 
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 1.5, useCORS: true }, 
+      html2canvas: { scale: 1.2, useCORS: true }, 
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
     };
     
@@ -264,7 +266,7 @@
       console.error(err);
     } finally {
       btn.disabled = false;
-      btn.innerHTML = '📄 PDF';
+      btn.innerHTML = '📄 Generar PDF';
     }
   }
 
