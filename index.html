@@ -3,13 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Circular 33 - Los Lagos 2026</title>
+  <title>Control Circular 33 - Los Lagos 2026</title>
   
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   
   <style>
-    :root { --blue-lagos: #004a87; --accent: #0072bc; --green-rec: #10b981; --orange-obs: #f59e0b; --gray-oth: #94a3b8; }
+    :root { 
+      --blue-lagos: #004a87; 
+      --accent: #0072bc; 
+      --green-rec: #10b981; 
+      --orange-obs: #f59e0b; 
+      --purple-tram: #6f42c1;
+      --gray-oth: #6c757d; 
+    }
     body { background-color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; }
     
     .main-header { 
@@ -22,16 +29,19 @@
       border-top: 5px solid var(--blue-lagos); box-shadow: 0 2px 8px rgba(0,0,0,0.05); height: 100%;
     }
 
-    .status-card { border-radius: 12px; padding: 25px; color: white; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .status-card { border-radius: 12px; padding: 20px; color: white; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
     .bg-rec { background: var(--green-rec); }
     .bg-obs { background: var(--orange-obs); }
+    .bg-tram { background: var(--purple-tram); }
     .bg-oth { background: var(--gray-oth); }
     
-    .cant-proyectos { font-size: 1.8rem; font-weight: bold; margin-top: 5px; }
+    .disclaimer-white { font-size: 0.7rem; color: rgba(255,255,255,0.8); font-style: italic; margin-bottom: 10px; }
+    .cant-proyectos { font-size: 1.5rem; font-weight: bold; }
+    .tramite-detail { font-size: 0.85rem; rgba(255,255,255,0.9); }
 
     @media print {
       .no-print { display: none !important; }
-      .kpi-card, .status-card, tr { page-break-inside: avoid !important; }
+      .kpi-card, .status-card, tr, .table-container { page-break-inside: avoid !important; break-inside: avoid !important; }
     }
 
     #loader { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; text-align: center; }
@@ -41,14 +51,14 @@
 
 <div id="loader">
   <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
-  <p class="mt-3 fw-bold text-secondary">Sincronizando con Excel "Hoja 2026"...</p>
+  <p class="mt-3 fw-bold text-secondary">Cargando datos desde Excel (Hoja 2026)...</p>
 </div>
 
 <div id="dashboard" style="display:none;" class="container-fluid">
   
   <div class="main-header d-flex justify-content-between align-items-center">
     <div>
-      <h2 class="mb-0">Gestión de Iniciativas - Circular 33 - Alex se la come doblada</h2>
+      <h2 class="mb-0">Gestión de Iniciativas - Circular 33</h2>
       <p class="mb-0 opacity-75 small">Gobierno Regional de Los Lagos - Reporte 2026</p>
     </div>
     <div class="d-flex gap-2 no-print">
@@ -59,11 +69,12 @@
 
   <div class="row g-3 mb-4">
     <div class="col-md-4"><div class="kpi-card">
-      <div class="text-muted small fw-bold">COSTO TOTAL SELECCIÓN (M$)</div>
+      <div class="text-muted small fw-bold">COSTO TOTAL (M$)</div>
       <h2 id="kpiCosto" class="mt-1" style="color: var(--blue-lagos);">$ 0</h2>
+      <div class="small text-muted fst-italic">*Valores en miles de pesos</div>
     </div></div>
     <div class="col-md-4"><div class="kpi-card" style="border-top-color: var(--green-rec);">
-      <div class="text-muted small fw-bold">RECOMENDADOS (RS)</div>
+      <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE (RT)</div>
       <h2 id="kpiRec" class="text-success mt-1">0</h2>
     </div></div>
     <div class="col-md-4"><div class="kpi-card" style="border-top-color: #6366f1;">
@@ -83,9 +94,41 @@
   </div>
 
   <div class="row g-3 mb-4">
-    <div class="col-12 col-md-4"><div class="status-card bg-rec"><h6>RECOMENDADOS</h6><h3 id="cardRecMonto">$ 0</h3><div id="cardRecCant" class="cant-proyectos">0 Proyectos</div></div></div>
-    <div class="col-12 col-md-4"><div class="status-card bg-obs"><h6>OBSERVADOS</h6><h3 id="cardObsMonto">$ 0</h3><div id="cardObsCant" class="cant-proyectos">0 Proyectos</div></div></div>
-    <div class="col-12 col-md-4"><div class="status-card bg-oth"><h6>OTROS / PENDIENTES</h6><h3 id="cardOthMonto">$ 0</h3><div id="cardOthCant" class="cant-proyectos">0 Proyectos</div></div></div>
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="status-card bg-obs">
+        <h6 class="fw-bold opacity-75">OBSERVADOS</h6>
+        <h4 id="cardObsMonto">$ 0</h4>
+        <div class="disclaimer-white">*Miles de pesos</div>
+        <div id="cardObsCant" class="cant-proyectos">0 Proyectos</div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="status-card" style="background-color: #fd7e14;"> <h6 class="fw-bold opacity-75">EN REEVALUACIÓN</h6>
+        <h4 id="cardReevMonto">$ 0</h4>
+        <div class="disclaimer-white">*Miles de pesos</div>
+        <div id="cardReevCant" class="cant-proyectos">0 Proyectos</div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="status-card bg-tram">
+        <h6 class="fw-bold opacity-75">TRÁMITE ADMINISTRATIVO</h6>
+        <h4 id="cardTramMonto">$ 0</h4>
+        <div class="disclaimer-white">*Miles de pesos</div>
+        <div class="d-flex justify-content-between tramite-detail mt-2">
+            <span>FIRMA OBS: <strong id="countFirmaObs">0</strong></span>
+            <span>RT FIRMA: <strong id="countRtFirma">0</strong></span>
+        </div>
+        <div id="cardTramCant" class="cant-proyectos mt-2">0 Proyectos</div>
+      </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+      <div class="status-card bg-oth">
+        <h6 class="fw-bold opacity-75">EN EVALUACIÓN / OTROS</h6>
+        <h4 id="cardOthMonto">$ 0</h4>
+        <div class="disclaimer-white">*Miles de pesos</div>
+        <div id="cardOthCant" class="cant-proyectos">0 Proyectos</div>
+      </div>
+    </div>
   </div>
 
   <div class="table-container mb-5 bg-white p-3 rounded shadow-sm">
@@ -101,7 +144,7 @@
 </div>
 
 <script>
-  // URL DE LA IMPLEMENTACIÓN EXITOSA
+  // URL DE TU IMPLEMENTACIÓN EXITOSA
   const API_URL = "https://script.google.com/macros/s/AKfycbwb7H-TGC0BY4Dyp7h1HFx5l8KSFI5WyPulz7GtUArMvoOzeYkOR3MJRzUQ-SYJWKP1/exec"; 
 
   let DB = [];
@@ -139,6 +182,12 @@
     fill('selEstado', getList(IDX.est), 'Estados', 'Todos');
   }
 
+  // Función para formatear en miles de pesos (M$)
+  const f_miles = (n) => {
+    const miles = Math.round(n / 1000);
+    return "$" + miles.toLocaleString('es-CL');
+  };
+
   function render() {
     const fP = document.getElementById('selProv').value, fC = document.getElementById('selComuna').value,
           fR = document.getElementById('selReev').value, fE = document.getElementById('selEstado').value,
@@ -152,40 +201,82 @@
              (r[IDX.nom].toString().toLowerCase().includes(search) || r[IDX.cod].toString().includes(search));
     });
 
-    let totalMonto = 0, recCount = 0, tableHtml = "";
-    let stats = { 'RECOMENDADO': {m:0, c:0}, 'OBSERVADO': {m:0, c:0}, 'OTROS': {m:0, c:0} };
+    let totalMonto = 0, countRT = 0;
+    let stats = { 
+        obs: {m:0, c:0}, 
+        reev: {m:0, c:0}, 
+        tram: {m:0, c:0, cFirmaObs:0, cRtFirma:0}, 
+        oth: {m:0, c:0} 
+    };
+    let tableHtml = "";
 
     rows.forEach(r => {
       const val = parseInt(r[IDX.mon]?.toString().replace(/[^0-9]/g, '')) || 0;
       totalMonto += val;
-      let estRaw = (r[IDX.est] || "PENDIENTE").toString().trim().toUpperCase();
-      let cat = estRaw.includes("RECOMENDADO") ? 'RECOMENDADO' : (estRaw.includes("OBSERVADO") ? 'OBSERVADO' : 'OTROS');
       
-      stats[cat].m += val; stats[cat].c += 1;
-      if (cat === 'RECOMENDADO') recCount++;
+      const estRaw = (r[IDX.est] || "").toString().trim().toUpperCase();
+      const reevRaw = (r[IDX.reev] || "").toString().trim().toUpperCase();
+      
+      let badgeClass = "bg-secondary"; // Por defecto
+
+      // Lógica de KPIs y Tarjetas
+      if (estRaw.includes("CUMPLE RT")) {
+          countRT++;
+          badgeClass = "bg-success";
+      }
+      
+      if (estRaw.includes("OBSERVADO")) {
+          stats.obs.m += val; stats.obs.c++;
+          badgeClass = "bg-warning text-dark";
+      } else if (estRaw === "FIRMA OBS") {
+          stats.tram.m += val; stats.tram.c++; stats.tram.cFirmaObs++;
+          badgeClass = "bg-info text-dark";
+      } else if (estRaw === "RT FIRMA") {
+          stats.tram.m += val; stats.tram.c++; stats.tram.cRtFirma++;
+          badgeClass = "bg-info text-dark";
+      } else if (!estRaw.includes("CUMPLE RT")) {
+          // Cualquier otro estado que no sea RT, Observado o Trámite
+          stats.oth.m += val; stats.oth.c++;
+      }
+
+      // Conteo independiente para "En Reevaluación" (si la columna tiene "SI")
+      if (reevRaw === "SI") {
+          stats.reev.m += val; stats.reev.c++;
+      }
 
       tableHtml += `<tr>
         <td><small class="text-muted">${r[IDX.cod]}</small></td>
         <td style="max-width:300px"><strong>${r[IDX.nom]}</strong></td>
         <td>${r[IDX.com]}</td>
         <td>${r[IDX.reev] || '-'}</td>
-        <td class="text-end fw-bold text-primary">$${val.toLocaleString('de-DE')}</td>
-        <td class="text-center"><span class="badge ${cat === 'RECOMENDADO' ? 'bg-success' : 'bg-warning text-dark'}">${estRaw}</span></td>
+        <td class="text-end fw-bold text-primary">${f_miles(val)}</td>
+        <td class="text-center"><span class="badge ${badgeClass}">${estRaw || 'PENDIENTE'}</span></td>
       </tr>`;
     });
 
+    // Actualizar DOM
     document.getElementById('tableBody').innerHTML = tableHtml;
-    document.getElementById('kpiCosto').innerText = "$" + totalMonto.toLocaleString('de-DE');
-    document.getElementById('kpiRec').innerText = recCount;
+    document.getElementById('kpiCosto').innerText = f_miles(totalMonto);
+    document.getElementById('kpiRec').innerText = countRT;
     document.getElementById('kpiCount').innerText = rows.length;
     
-    const f = (n) => "$" + n.toLocaleString('de-DE');
-    document.getElementById('cardRecMonto').innerText = f(stats['RECOMENDADO'].m);
-    document.getElementById('cardRecCant').innerText = stats['RECOMENDADO'].c + " Proyectos";
-    document.getElementById('cardObsMonto').innerText = f(stats['OBSERVADO'].m);
-    document.getElementById('cardObsCant').innerText = stats['OBSERVADO'].c + " Proyectos";
-    document.getElementById('cardOthMonto').innerText = f(stats['OTROS'].m);
-    document.getElementById('cardOthCant').innerText = stats['OTROS'].c + " Proyectos";
+    // Tarjeta Observados
+    document.getElementById('cardObsMonto').innerText = f_miles(stats.obs.m);
+    document.getElementById('cardObsCant').innerText = stats.obs.c + " Proyectos";
+    
+    // Tarjeta En Reevaluación
+    document.getElementById('cardReevMonto').innerText = f_miles(stats.reev.m);
+    document.getElementById('cardReevCant').innerText = stats.reev.c + " Proyectos";
+
+    // Tarjeta Trámite Administrativo
+    document.getElementById('cardTramMonto').innerText = f_miles(stats.tram.m);
+    document.getElementById('countFirmaObs').innerText = stats.tram.cFirmaObs;
+    document.getElementById('countRtFirma').innerText = stats.tram.cRtFirma;
+    document.getElementById('cardTramCant').innerText = stats.tram.c + " Proyectos";
+
+    // Tarjeta Otros
+    document.getElementById('cardOthMonto').innerText = f_miles(stats.oth.m);
+    document.getElementById('cardOthCant').innerText = stats.oth.c + " Proyectos";
   }
 
   function exportarPDF() {
