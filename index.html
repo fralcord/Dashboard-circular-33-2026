@@ -2,96 +2,55 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control Circular 33 - Los Lagos 2026</title>
-  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  
   <style>
-    :root { 
-      --blue-lagos: #004a87; 
-      --accent: #0072bc; 
-      --green-rec: #10b981; 
-      --orange-obs: #f59e0b; 
-      --purple-tram: #6f42c1;
-      --gray-oth: #6c757d; 
-      --reev: #d946ef;
-    }
-    body { background-color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; }
-    
-    .main-header { 
-      background: linear-gradient(135deg, var(--blue-lagos) 0%, var(--accent) 100%); 
-      color: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    
-    /* Tarjeta Unificada KPI */
-    .kpi-unified {
-      background: white; border-radius: 12px; border-top: 5px solid var(--green-rec);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; overflow: hidden; height: 100%;
-    }
+    :root { --blue-lagos: #004a87; --green-rec: #10b981; --orange-obs: #f59e0b; --purple-tram: #6f42c1; --gray-oth: #6c757d; --reev: #d946ef; }
+    body { background-color: #f8fafc; font-family: 'Segoe UI', sans-serif; padding: 10px; }
+    .main-header { background: linear-gradient(135deg, var(--blue-lagos), #0072bc); color: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; }
+    .kpi-unified { background: white; border-radius: 12px; border-top: 5px solid var(--green-rec); box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; overflow: hidden; }
     .kpi-section { flex: 1; padding: 20px; text-align: center; }
-    .kpi-divider { width: 1px; background: #e2e8f0; margin: 15px 0; }
-    
     .status-card { border-radius: 12px; padding: 20px; color: white; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .bg-obs { background: var(--orange-obs); }
-    .bg-tram { background: var(--purple-tram); }
-    .bg-oth { background: var(--gray-oth); }
-    .bg-reev { background-color: var(--reev); }
-    
-    .disclaimer-white { font-size: 0.7rem; color: rgba(255,255,255,0.8); font-style: italic; margin-bottom: 5px; }
-    .cant-proyectos { font-size: 1.6rem; font-weight: bold; }
-    .tramite-detail { font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 8px; margin-top: 8px; }
-
-    @media print {
-      .no-print { display: none !important; }
-      .kpi-unified, .status-card, tr, .table-container { page-break-inside: avoid !important; }
-    }
-
-    #loader { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; text-align: center; }
+    .bg-obs { background: var(--orange-obs); } .bg-reev { background: var(--reev); } .bg-tram { background: var(--purple-tram); } .bg-oth { background: var(--gray-oth); }
+    .cant-proyectos { font-size: 1.8rem; font-weight: bold; }
+    .disclaimer { font-size: 0.75rem; color: #6c757d; font-style: italic; }
   </style>
 </head>
 <body>
 
-<div id="loader">
+<div id="loader" class="text-center mt-5">
   <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
-  <p class="mt-3 fw-bold text-secondary">Optimizando y cargando datos...</p>
+  <p class="mt-3 fw-bold text-secondary">Optimizando datos de Excel "Hoja 2026"...</p>
 </div>
 
 <div id="dashboard" style="display:none;" class="container-fluid">
-  
   <div class="main-header d-flex justify-content-between align-items-center">
-    <div>
-      <h2 class="mb-0">Gestión de Iniciativas - Circular 33</h2>
-      <p class="mb-0 opacity-75 small">Gobierno Regional de Los Lagos - Reporte 2026</p>
-    </div>
-    <div class="d-flex gap-2 no-print">
-      <button class="btn btn-danger btn-sm fw-bold" onclick="exportarPDF()">📄 PDF</button>
-      <button class="btn btn-light btn-sm fw-bold" onclick="location.reload()">🔄 Actualizar</button>
-    </div>
+    <div><h2 class="mb-0">Gestión de Iniciativas - Circular 33</h2><p class="mb-0 opacity-75">Gobierno Regional de Los Lagos - 2026</p></div>
+    <div class="no-print"><button class="btn btn-danger btn-sm fw-bold" onclick="exportarPDF()">📄 Generar PDF</button></div>
   </div>
 
   <div class="row g-3 mb-4">
-    <div class="col-lg-8 col-md-12">
+    <div class="col-lg-8">
       <div class="kpi-unified">
         <div class="kpi-section">
           <div class="text-muted small fw-bold">COSTO TOTAL (M$)</div>
           <h2 id="kpiCosto" class="mt-1" style="color: var(--blue-lagos); font-weight: 800;">$ 0</h2>
-          <div class="small text-muted fst-italic">*Valores en miles de pesos</div>
+          <div class="disclaimer">*Valores en miles de pesos</div>
         </div>
-        <div class="kpi-divider"></div>
+        <div style="width: 1px; background: #e2e8f0; margin: 15px 0;"></div>
         <div class="kpi-section">
-          <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE (RT)</div>
+          <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE</div>
           <h2 id="kpiRec" class="text-success mt-1" style="font-weight: 800;">0</h2>
-          <div class="small text-muted">Iniciativas "Cumple RT"</div>
+          <div class="small text-muted">Proyectos "Cumple RT"</div>
         </div>
       </div>
     </div>
-    <div class="col-lg-4 col-md-12">
-      <div class="status-card" style="background: white; color: var(--blue-lagos); border-top: 5px solid var(--accent);">
-        <div class="text-muted small fw-bold">UNIVERSO DE PROYECTOS</div>
+    <div class="col-lg-4">
+      <div class="status-card bg-white text-dark border-top border-primary border-5">
+        <div class="text-muted small fw-bold">UNIVERSO TOTAL</div>
         <h2 id="kpiCount" class="mt-1" style="font-weight: 800;">0</h2>
-        <div class="small text-muted">Proyectos en vista actual</div>
+        <div class="small text-muted">Proyectos cargados</div>
       </div>
     </div>
   </div>
@@ -105,55 +64,22 @@
   </div>
 
   <div class="row g-3 mb-4">
-    <div class="col-12 col-md-6 col-lg-3">
-      <div class="status-card bg-obs">
-        <h6 class="fw-bold opacity-75">OBSERVADOS</h6>
-        <div id="cardObsCant" class="cant-proyectos mt-3">0</div>
-        <small>Proyectos</small>
-      </div>
-    </div>
-    <div class="col-12 col-md-6 col-lg-3">
-      <div class="status-card bg-reev">
-        <h6 class="fw-bold opacity-75">EN REEVALUACIÓN</h6>
-        <h4 id="cardReevMonto">$ 0</h4>
-        <div class="disclaimer-white">*Miles de pesos</div>
-        <div id="cardReevCant" class="cant-proyectos">0</div>
-        <small>Proyectos</small>
-      </div>
-    </div>
-    <div class="col-12 col-md-6 col-lg-3">
-      <div class="status-card bg-tram">
-        <h6 class="fw-bold opacity-75">TRÁMITE ADMINISTRATIVO</h6>
-        <div id="cardTramCant" class="cant-proyectos mt-2">0</div>
-        <div class="tramite-detail d-flex justify-content-between">
-            <span>FIRMA OBS: <strong id="countFirmaObs">0</strong></span>
-            <span>RT FIRMA: <strong id="countRtFirma">0</strong></span>
-        </div>
-      </div>
-    </div>
-    <div class="col-12 col-md-6 col-lg-3">
-      <div class="status-card bg-oth">
-        <h6 class="fw-bold opacity-75">EN EVALUACIÓN / OTROS</h6>
-        <div id="cardOthCant" class="cant-proyectos mt-3">0</div>
-        <small>Proyectos</small>
-      </div>
-    </div>
+    <div class="col-md-3"><div class="status-card bg-obs"><h6>OBSERVADOS</h6><div id="cardObsCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
+    
+    <div class="col-md-3"><div class="status-card bg-reev"><h6>EN REEVALUACIÓN</h6><h4 id="cardReevMonto">$ 0</h4><div class="disclaimer text-white-50">*Miles de pesos</div><div id="cardReevCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
+    
+    <div class="col-md-3"><div class="status-card bg-tram"><h6>TRÁMITE ADMINISTRATIVO</h6><div id="cardTramCant" class="cant-proyectos">0</div>
+      <div class="small mt-2 border-top pt-2 opacity-75">FIRMA OBS: <span id="countFirmaObs">0</span> | RT FIRMA: <span id="countRtFirma">0</span></div>
+    </div></div>
+    
+    <div class="col-md-3"><div class="status-card bg-oth"><h6>EN EVALUACIÓN / OTROS</h6><div id="cardOthCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
   </div>
 
   <div class="table-container mb-5 bg-white p-3 rounded shadow-sm">
     <div class="table-responsive">
       <table class="table table-hover table-sm align-middle" style="font-size: 0.8rem;">
         <thead class="table-dark">
-          <tr>
-            <th>BIP</th>
-            <th>Nombre Iniciativa</th>
-            <th>Formulador</th>
-            <th>Provincia</th>
-            <th>Comuna</th>
-            <th>Reev.</th>
-            <th class="text-end">Monto (M$)</th>
-            <th class="text-center">Estado</th>
-          </tr>
+          <tr><th>BIP</th><th>Nombre</th><th>Formulador</th><th>Provincia</th><th>Comuna</th><th>Reev.</th><th class="text-end">Monto (M$)</th><th>Estado</th></tr>
         </thead>
         <tbody id="tableBody"></tbody>
       </table>
@@ -162,31 +88,24 @@
 </div>
 
 <script>
-  // NUEVA URL DE IMPLEMENTACIÓN
-  const API_URL = "https://script.google.com/macros/s/AKfycbxmqPOurzNC76_O7a08Q2wvD0ixIEKXT6mnx9wUtaySamGsaFhMFQxM_Zc6L-xjS2SH/exec"; 
-
+  // URL ACTUALIZADA SEGÚN TU SOLICITUD
+  const API_URL = "https://script.google.com/macros/s/AKfycbzslo__5lmVv9l2GFrEjKeQ_IgP8wneeqDddXTXWfd_kVjNAU7KnF1HdLarRAOTZCFP/exec"; 
   let DB = [];
   const IDX = { pro: 5, com: 6, for: 7, cod: 8, nom: 9, mon: 10, est: 12, reev: 27 };
 
   async function init() {
     try {
-      const resp = await fetch(API_URL);
-      const data = await resp.json();
-      if (data.error) throw new Error(data.error);
-
-      // Limpieza: quitamos encabezados y filas vacías
-      DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().trim().toUpperCase() !== "BIP");
-      
-      poblarSelectores();
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().toUpperCase() !== "BIP");
+      poblarFiltros();
       document.getElementById('loader').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
       render();
-    } catch (error) {
-      document.getElementById('loader').innerHTML = `<div class="alert alert-danger m-3">Error de carga: ${error.message}</div>`;
-    }
+    } catch (e) { console.error(e); }
   }
 
-  function poblarSelectores() {
+  function poblarFiltros() {
     const getList = (idx) => [...new Set(DB.map(r => r[idx]?.toString().trim()))].filter(x => x).sort();
     const fill = (id, list, label) => {
       let el = document.getElementById(id);
@@ -197,7 +116,6 @@
     fill('selComuna', getList(IDX.com), 'Comunas');
   }
 
-  // Formato a Miles de Pesos (M$)
   const f_miles = (n) => "$" + (Math.round(n / 1000)).toLocaleString('es-CL');
 
   function render() {
@@ -206,86 +124,49 @@
     const search = document.getElementById('busqueda').value.toLowerCase();
 
     const rows = DB.filter(r => {
-      const p = (r[IDX.pro] || "").toString().trim();
-      const c = (r[IDX.com] || "").toString().trim();
-      const n = (r[IDX.nom] || "").toString().toLowerCase();
-      const b = (r[IDX.cod] || "").toString().toLowerCase();
-      const f = (r[IDX.for] || "").toString().toLowerCase();
-
-      return (fP === "ALL" || p === fP) && 
-             (fC === "ALL" || c === fC) &&
-             (n.includes(search) || b.includes(search) || f.includes(search));
+      const matchP = fP === "ALL" || r[IDX.pro] === fP;
+      const matchC = fC === "ALL" || r[IDX.com] === fC;
+      const matchS = r[IDX.nom].toLowerCase().includes(search) || r[IDX.cod].toString().includes(search) || r[IDX.for].toLowerCase().includes(search);
+      return matchP && matchC && matchS;
     });
 
-    let totalCosto = 0, countRT = 0;
-    let s = { obs: 0, reevM: 0, reevC: 0, tram: 0, fObs: 0, rFirma: 0, oth: 0 };
+    let totalC = 0, countRT = 0, s = { obs:0, reevM:0, reevC:0, tram:0, fObs:0, rFirma:0, oth:0 };
     let html = "";
 
     rows.forEach(r => {
       const val = parseInt(r[IDX.mon]) || 0;
-      const est = (r[IDX.est] || "").toString().trim().toUpperCase();
-      const isReev = (r[IDX.reev] || "").toString().trim().toUpperCase() === "SI";
+      const est = (r[IDX.est] || "").toUpperCase();
+      const rv = (r[IDX.reev] || "").toUpperCase() === "SI";
 
-      // Lógica Costo Total (RT o Reevaluación)
-      const esRT = est.includes("CUMPLE RT");
-      if (esRT) {
-          totalCosto += val;
-          countRT++;
-      }
-      if (isReev) {
-          s.reevM += val;
-          s.reevC++;
-          if (!esRT) totalCosto += val; 
-      }
+      // Lógica de tarjetas
+      if (est.includes("CUMPLE RT")) { countRT++; totalC += val; }
+      if (rv) { s.reevM += val; s.reevC++; if(!est.includes("CUMPLE RT")) totalC += val; }
+      
+      if (est.includes("OBSERVADO")) s.obs++;
+      else if (est === "FIRMA OBS") { s.tram++; s.fObs++; }
+      else if (est === "RT FIRMA") { s.tram++; s.rFirma++; }
+      else if (!est.includes("CUMPLE RT")) s.oth++;
 
-      // Conteo de tarjetas (Sin montos según solicitud)
-      if (est.includes("OBSERVADO")) {
-          s.obs++;
-      } else if (est === "FIRMA OBS") {
-          s.tram++; s.fObs++;
-      } else if (est === "RT FIRMA") {
-          s.tram++; s.rFirma++;
-      } else if (!esRT) {
-          s.oth++;
-      }
-
-      let badge = esRT ? "bg-success" : (est.includes("OBS") ? "bg-warning text-dark" : "bg-secondary");
-
-      html += `<tr>
-        <td>${r[IDX.cod]}</td>
-        <td><strong>${r[IDX.nom]}</strong></td>
-        <td>${r[IDX.for] || '-'}</td>
-        <td>${r[IDX.pro]}</td>
-        <td>${r[IDX.com]}</td>
-        <td class="text-center">${isReev ? '✅' : '❌'}</td>
-        <td class="text-end fw-bold text-primary">${f_miles(val)}</td>
-        <td class="text-center"><span class="badge ${badge}">${est || 'PENDIENTE'}</span></td>
-      </tr>`;
+      html += `<tr><td>${r[IDX.cod]}</td><td><strong>${r[IDX.nom]}</strong></td><td>${r[IDX.for]}</td><td>${r[IDX.pro]}</td><td>${r[IDX.com]}</td><td class="text-center">${rv?'✅':'❌'}</td><td class="text-end fw-bold text-primary">${f_miles(val)}</td><td><span class="badge ${est.includes('RT')?'bg-success':'bg-secondary'}">${est || 'PENDIENTE'}</span></td></tr>`;
     });
 
     document.getElementById('tableBody').innerHTML = html;
-    document.getElementById('kpiCosto').innerText = f_miles(totalCosto);
+    document.getElementById('kpiCosto').innerText = f_miles(totalC);
     document.getElementById('kpiRec').innerText = countRT;
     document.getElementById('kpiCount').innerText = rows.length;
     document.getElementById('cardObsCant').innerText = s.obs;
     document.getElementById('cardReevMonto').innerText = f_miles(s.reevM);
     document.getElementById('cardReevCant').innerText = s.reevC;
+    document.getElementById('cardTramCant').innerText = s.tram;
     document.getElementById('countFirmaObs').innerText = s.fObs;
     document.getElementById('countRtFirma').innerText = s.rFirma;
-    document.getElementById('cardTramCant').innerText = s.tram;
     document.getElementById('cardOthCant').innerText = s.oth;
   }
 
   function exportarPDF() {
-    const opt = {
-      margin: 10, filename: 'Reporte_Circular33_2026.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-    };
+    const opt = { margin: 10, filename: 'Reporte_Circular33.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } };
     html2pdf().set(opt).from(document.getElementById('dashboard')).save();
   }
-
   init();
 </script>
 </body>
