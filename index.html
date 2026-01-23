@@ -24,24 +24,27 @@
       color: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     
-    .kpi-card { 
-      background: white; border: none; border-radius: 12px; padding: 20px; 
-      border-top: 5px solid var(--blue-lagos); box-shadow: 0 2px 8px rgba(0,0,0,0.05); height: 100%;
+    /* Tarjeta Unificada KPI */
+    .kpi-unified {
+      background: white; border-radius: 12px; border-top: 5px solid var(--green-rec);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; overflow: hidden; height: 100%;
     }
-
+    .kpi-section { flex: 1; padding: 20px; text-align: center; }
+    .kpi-divider { width: 1px; background: #e2e8f0; margin: 15px 0; }
+    
     .status-card { border-radius: 12px; padding: 20px; color: white; height: 100%; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .bg-rec { background: var(--green-rec); }
     .bg-obs { background: var(--orange-obs); }
     .bg-tram { background: var(--purple-tram); }
     .bg-oth { background: var(--gray-oth); }
+    .bg-reev { background-color: #d946ef; } /* Fucsia para reevaluación */
     
-    .disclaimer-white { font-size: 0.7rem; color: rgba(255,255,255,0.8); font-style: italic; margin-bottom: 10px; }
+    .disclaimer-white { font-size: 0.7rem; color: rgba(255,255,255,0.8); font-style: italic; margin-bottom: 5px; }
     .cant-proyectos { font-size: 1.5rem; font-weight: bold; }
-    .tramite-detail { font-size: 0.85rem; rgba(255,255,255,0.9); }
+    .tramite-detail { font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 8px; margin-top: 8px; }
 
     @media print {
       .no-print { display: none !important; }
-      .kpi-card, .status-card, tr, .table-container { page-break-inside: avoid !important; break-inside: avoid !important; }
+      .kpi-unified, .status-card, tr, .table-container { page-break-inside: avoid !important; }
     }
 
     #loader { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; text-align: center; }
@@ -51,7 +54,7 @@
 
 <div id="loader">
   <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
-  <p class="mt-3 fw-bold text-secondary">Cargando datos desde Excel (Hoja 2026)...</p>
+  <p class="mt-3 fw-bold text-secondary">Sincronizando con Excel "Hoja 2026"...</p>
 </div>
 
 <div id="dashboard" style="display:none;" class="container-fluid">
@@ -62,25 +65,34 @@
       <p class="mb-0 opacity-75 small">Gobierno Regional de Los Lagos - Reporte 2026</p>
     </div>
     <div class="d-flex gap-2 no-print">
-      <button id="btnPDF" class="btn btn-danger btn-sm fw-bold" onclick="exportarPDF()">📄 Generar PDF</button>
+      <button class="btn btn-danger btn-sm fw-bold" onclick="exportarPDF()">📄 PDF</button>
       <button class="btn btn-light btn-sm fw-bold" onclick="location.reload()">🔄 Actualizar</button>
     </div>
   </div>
 
   <div class="row g-3 mb-4">
-    <div class="col-md-4"><div class="kpi-card">
-      <div class="text-muted small fw-bold">COSTO TOTAL (M$)</div>
-      <h2 id="kpiCosto" class="mt-1" style="color: var(--blue-lagos);">$ 0</h2>
-      <div class="small text-muted fst-italic">*Valores en miles de pesos</div>
-    </div></div>
-    <div class="col-md-4"><div class="kpi-card" style="border-top-color: var(--green-rec);">
-      <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE (RT)</div>
-      <h2 id="kpiRec" class="text-success mt-1">0</h2>
-    </div></div>
-    <div class="col-md-4"><div class="kpi-card" style="border-top-color: #6366f1;">
-      <div class="text-muted small fw-bold">TOTAL PROYECTOS VISTOS</div>
-      <h2 id="kpiCount" class="text-primary mt-1">0</h2>
-    </div></div>
+    <div class="col-lg-8 col-md-12">
+      <div class="kpi-unified">
+        <div class="kpi-section">
+          <div class="text-muted small fw-bold">COSTO TOTAL (M$)</div>
+          <h2 id="kpiCosto" class="mt-1" style="color: var(--blue-lagos); font-weight: 800;">$ 0</h2>
+          <div class="small text-muted fst-italic">*Valores en miles de pesos</div>
+        </div>
+        <div class="kpi-divider"></div>
+        <div class="kpi-section">
+          <div class="text-muted small fw-bold">RECOMENDADOS TÉCNICAMENTE (RT)</div>
+          <h2 id="kpiRec" class="text-success mt-1" style="font-weight: 800;">0</h2>
+          <div class="small text-muted">Iniciativas "Cumple RT"</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4 col-md-12">
+      <div class="status-card" style="background: white; color: var(--blue-lagos); border-top: 5px solid var(--accent);">
+        <div class="text-muted small fw-bold">UNIVERSO DE PROYECTOS</div>
+        <h2 id="kpiCount" class="mt-1" style="font-weight: 800;">0</h2>
+        <div class="small text-muted">Proyectos en vista actual</div>
+      </div>
+    </div>
   </div>
 
   <div class="card p-3 mb-4 border-0 shadow-sm no-print">
@@ -89,7 +101,7 @@
       <div class="col-md-2"><select id="selComuna" class="form-select form-select-sm" onchange="render()"></select></div>
       <div class="col-md-2"><select id="selReev" class="form-select form-select-sm" onchange="render()"></select></div>
       <div class="col-md-2"><select id="selEstado" class="form-select form-select-sm" onchange="render()"></select></div>
-      <div class="col-md-4"><input type="text" id="busqueda" class="form-control form-control-sm" placeholder="Buscar por Nombre o BIP..." onkeyup="render()"></div>
+      <div class="col-md-4"><input type="text" id="busqueda" class="form-control form-control-sm" placeholder="Buscar por Nombre, BIP o Formulador..." onkeyup="render()"></div>
     </div>
   </div>
 
@@ -97,13 +109,12 @@
     <div class="col-12 col-md-6 col-lg-3">
       <div class="status-card bg-obs">
         <h6 class="fw-bold opacity-75">OBSERVADOS</h6>
-        <h4 id="cardObsMonto">$ 0</h4>
-        <div class="disclaimer-white">*Miles de pesos</div>
-        <div id="cardObsCant" class="cant-proyectos">0 Proyectos</div>
+        <div id="cardObsCant" class="cant-proyectos mt-3">0 Proyectos</div>
       </div>
     </div>
     <div class="col-12 col-md-6 col-lg-3">
-      <div class="status-card" style="background-color: #fd7e14;"> <h6 class="fw-bold opacity-75">EN REEVALUACIÓN</h6>
+      <div class="status-card bg-reev">
+        <h6 class="fw-bold opacity-75">EN REEVALUACIÓN</h6>
         <h4 id="cardReevMonto">$ 0</h4>
         <div class="disclaimer-white">*Miles de pesos</div>
         <div id="cardReevCant" class="cant-proyectos">0 Proyectos</div>
@@ -112,30 +123,35 @@
     <div class="col-12 col-md-6 col-lg-3">
       <div class="status-card bg-tram">
         <h6 class="fw-bold opacity-75">TRÁMITE ADMINISTRATIVO</h6>
-        <h4 id="cardTramMonto">$ 0</h4>
-        <div class="disclaimer-white">*Miles de pesos</div>
-        <div class="d-flex justify-content-between tramite-detail mt-2">
+        <div id="cardTramCant" class="cant-proyectos mt-2">0 Proyectos</div>
+        <div class="tramite-detail d-flex justify-content-between">
             <span>FIRMA OBS: <strong id="countFirmaObs">0</strong></span>
             <span>RT FIRMA: <strong id="countRtFirma">0</strong></span>
         </div>
-        <div id="cardTramCant" class="cant-proyectos mt-2">0 Proyectos</div>
       </div>
     </div>
     <div class="col-12 col-md-6 col-lg-3">
       <div class="status-card bg-oth">
         <h6 class="fw-bold opacity-75">EN EVALUACIÓN / OTROS</h6>
-        <h4 id="cardOthMonto">$ 0</h4>
-        <div class="disclaimer-white">*Miles de pesos</div>
-        <div id="cardOthCant" class="cant-proyectos">0 Proyectos</div>
+        <div id="cardOthCant" class="cant-proyectos mt-3">0 Proyectos</div>
       </div>
     </div>
   </div>
 
   <div class="table-container mb-5 bg-white p-3 rounded shadow-sm">
     <div class="table-responsive">
-      <table class="table table-hover table-sm align-middle" style="font-size: 0.85rem;">
+      <table class="table table-hover table-sm align-middle" style="font-size: 0.8rem;">
         <thead class="table-dark">
-          <tr><th>BIP</th><th>Nombre Iniciativa</th><th>Comuna</th><th>Reevaluación</th><th class="text-end">Monto (M$)</th><th class="text-center">Estado</th></tr>
+          <tr>
+            <th>BIP</th>
+            <th>Nombre Iniciativa</th>
+            <th>Formulador</th>
+            <th>Provincia</th>
+            <th>Comuna</th>
+            <th>Reev.</th>
+            <th class="text-end">Monto (M$)</th>
+            <th class="text-center">Estado</th>
+          </tr>
         </thead>
         <tbody id="tableBody"></tbody>
       </table>
@@ -144,139 +160,147 @@
 </div>
 
 <script>
-  // URL DE TU IMPLEMENTACIÓN EXITOSA
+  // URL DE IMPLEMENTACIÓN EXITOSA
   const API_URL = "https://script.google.com/macros/s/AKfycbwb7H-TGC0BY4Dyp7h1HFx5l8KSFI5WyPulz7GtUArMvoOzeYkOR3MJRzUQ-SYJWKP1/exec"; 
 
   let DB = [];
-  // Mapeo basado en tu Excel "2026": Provincia(5), Comuna(6), BIP(8), Nombre(9), Monto(10), Estado(12), Reevaluación(27)
-  const IDX = { pro: 5, com: 6, cod: 8, nom: 9, mon: 10, est: 12, reev: 27 };
+  // Índices según image_02871b y image_f7a26e
+  const IDX = { pro: 5, com: 6, for: 7, cod: 8, nom: 9, mon: 10, est: 12, reev: 27 };
 
   async function init() {
     try {
-      const response = await fetch(API_URL);
-      const data = await response.json();
+      const resp = await fetch(API_URL);
+      const data = await resp.resp = await resp.json();
       if (data.error) throw new Error(data.error);
 
-      // Filtrar filas vacías o encabezados
-      DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().trim().toLowerCase() !== "bip");
+      // Limpieza de datos: eliminamos encabezados basándonos en la columna BIP
+      DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().trim().toUpperCase() !== "BIP");
       
       poblarSelectores();
       document.getElementById('loader').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
       render();
     } catch (error) {
-      document.getElementById('loader').innerHTML = `<div class="alert alert-danger m-3">Error: ${error.message}</div>`;
+      document.getElementById('loader').innerHTML = `<div class="alert alert-danger m-3">Error de conexión: ${error.message}</div>`;
     }
   }
 
   function poblarSelectores() {
-    const getList = (idx) => [...new Set(DB.map(r => r[idx]?.toString().trim()))].filter(x => x).sort();
+    const getList = (idx) => [...new Set(DB.map(r => r[idx]?.toString().trim()))].filter(x => x && x !== "").sort();
+    
     const fill = (id, list, label, prefix) => {
       let el = document.getElementById(id);
       el.innerHTML = `<option value="ALL">${prefix} ${label}</option>`;
       list.forEach(v => el.innerHTML += `<option value="${v}">${v}</option>`);
     };
+
     fill('selProv', getList(IDX.pro), 'Provincias', 'Todas');
     fill('selComuna', getList(IDX.com), 'Comunas', 'Todas');
     fill('selReev', getList(IDX.reev), 'Reevaluaciones', 'Todas');
     fill('selEstado', getList(IDX.est), 'Estados', 'Todos');
   }
 
-  // Función para formatear en miles de pesos (M$)
   const f_miles = (n) => {
+    // Se muestra en Miles de Pesos (M$)
     const miles = Math.round(n / 1000);
     return "$" + miles.toLocaleString('es-CL');
   };
 
   function render() {
-    const fP = document.getElementById('selProv').value, fC = document.getElementById('selComuna').value,
-          fR = document.getElementById('selReev').value, fE = document.getElementById('selEstado').value,
-          search = document.getElementById('busqueda').value.toLowerCase();
+    const fP = document.getElementById('selProv').value;
+    const fC = document.getElementById('selComuna').value;
+    const fR = document.getElementById('selReev').value;
+    const fE = document.getElementById('selEstado').value;
+    const search = document.getElementById('busqueda').value.toLowerCase();
 
+    // FILTRO REPARADO: Normalización de strings para comparación robusta
     const rows = DB.filter(r => {
-      const est = (r[IDX.est] || "").toString().trim().toUpperCase();
-      const ree = (r[IDX.reev] || "").toString().trim();
-      return (fP === "ALL" || r[IDX.pro] === fP) && (fC === "ALL" || r[IDX.com] === fC) &&
-             (fR === "ALL" || ree === fR) && (fE === "ALL" || est === fE) &&
-             (r[IDX.nom].toString().toLowerCase().includes(search) || r[IDX.cod].toString().includes(search));
+      const prov = (r[IDX.pro] || "").toString().trim();
+      const comu = (r[IDX.com] || "").toString().trim();
+      const reev = (r[IDX.reev] || "").toString().trim();
+      const esta = (r[IDX.est] || "").toString().trim();
+      const nomb = (r[IDX.nom] || "").toString().toLowerCase();
+      const bip = (r[IDX.cod] || "").toString().toLowerCase();
+      const form = (r[IDX.for] || "").toString().toLowerCase();
+
+      const matchSelect = (fP === "ALL" || prov === fP) &&
+                          (fC === "ALL" || comu === fC) &&
+                          (fR === "ALL" || reev === fR) &&
+                          (fE === "ALL" || esta === fE);
+      
+      const matchSearch = nomb.includes(search) || bip.includes(search) || form.includes(search);
+
+      return matchSelect && matchSearch;
     });
 
-    let totalMonto = 0, countRT = 0;
+    let totalCosto = 0, countRT = 0;
     let stats = { 
-        obs: {m:0, c:0}, 
-        reev: {m:0, c:0}, 
-        tram: {m:0, c:0, cFirmaObs:0, cRtFirma:0}, 
-        oth: {m:0, c:0} 
+        obs: 0, 
+        reevM: 0, reevC: 0, 
+        tramC: 0, tramFirmaObs: 0, tramRtFirma: 0, 
+        othC: 0 
     };
     let tableHtml = "";
 
     rows.forEach(r => {
-      const val = parseInt(r[IDX.mon]?.toString().replace(/[^0-9]/g, '')) || 0;
-      totalMonto += val;
-      
+      const val = parseInt(r[IDX.mon]) || 0;
       const estRaw = (r[IDX.est] || "").toString().trim().toUpperCase();
-      const reevRaw = (r[IDX.reev] || "").toString().trim().toUpperCase();
-      
-      let badgeClass = "bg-secondary"; // Por defecto
+      const isReev = (r[IDX.reev] || "").toString().trim().toUpperCase() === "SI";
 
-      // Lógica de KPIs y Tarjetas
-      if (estRaw.includes("CUMPLE RT")) {
+      // Lógica de Costos (Solo RT o Reevaluación consignan monto en tarjetas)
+      const esRT = estRaw.includes("CUMPLE RT");
+      if (esRT) {
+          totalCosto += val;
           countRT++;
-          badgeClass = "bg-success";
       }
-      
-      if (estRaw.includes("OBSERVADO")) {
-          stats.obs.m += val; stats.obs.c++;
-          badgeClass = "bg-warning text-dark";
-      } else if (estRaw === "FIRMA OBS") {
-          stats.tram.m += val; stats.tram.c++; stats.tram.cFirmaObs++;
-          badgeClass = "bg-info text-dark";
-      } else if (estRaw === "RT FIRMA") {
-          stats.tram.m += val; stats.tram.c++; stats.tram.cRtFirma++;
-          badgeClass = "bg-info text-dark";
-      } else if (!estRaw.includes("CUMPLE RT")) {
-          // Cualquier otro estado que no sea RT, Observado o Trámite
-          stats.oth.m += val; stats.oth.c++;
+      if (isReev) {
+          stats.reevM += val;
+          stats.reevC++;
+          if (!esRT) totalCosto += val; // Evita duplicar si es RT y Reev a la vez
       }
 
-      // Conteo independiente para "En Reevaluación" (si la columna tiene "SI")
-      if (reevRaw === "SI") {
-          stats.reev.m += val; stats.reev.c++;
+      // Conteo de Estados
+      if (estRaw.includes("OBSERVADO")) {
+          stats.obs++;
+      } else if (estRaw === "FIRMA OBS") {
+          stats.tramC++; stats.tramFirmaObs++;
+      } else if (estRaw === "RT FIRMA") {
+          stats.tramC++; stats.tramRtFirma++;
+      } else if (!esRT) {
+          stats.othC++;
       }
+
+      // Estilo de badge
+      let badge = "bg-secondary";
+      if (esRT) badge = "bg-success";
+      else if (estRaw.includes("OBSERVADO")) badge = "bg-warning text-dark";
+      else if (estRaw.includes("FIRMA")) badge = "bg-info text-dark";
 
       tableHtml += `<tr>
-        <td><small class="text-muted">${r[IDX.cod]}</small></td>
-        <td style="max-width:300px"><strong>${r[IDX.nom]}</strong></td>
+        <td><small>${r[IDX.cod]}</small></td>
+        <td><strong>${r[IDX.nom]}</strong></td>
+        <td>${r[IDX.for] || '-'}</td>
+        <td>${r[IDX.pro]}</td>
         <td>${r[IDX.com]}</td>
-        <td>${r[IDX.reev] || '-'}</td>
+        <td class="text-center">${r[IDX.reev] === "SI" ? '✅' : '❌'}</td>
         <td class="text-end fw-bold text-primary">${f_miles(val)}</td>
-        <td class="text-center"><span class="badge ${badgeClass}">${estRaw || 'PENDIENTE'}</span></td>
+        <td class="text-center"><span class="badge ${badge}">${estRaw || 'PENDIENTE'}</span></td>
       </tr>`;
     });
 
-    // Actualizar DOM
+    // Actualización de UI
     document.getElementById('tableBody').innerHTML = tableHtml;
-    document.getElementById('kpiCosto').innerText = f_miles(totalMonto);
+    document.getElementById('kpiCosto').innerText = f_miles(totalCosto);
     document.getElementById('kpiRec').innerText = countRT;
     document.getElementById('kpiCount').innerText = rows.length;
     
-    // Tarjeta Observados
-    document.getElementById('cardObsMonto').innerText = f_miles(stats.obs.m);
-    document.getElementById('cardObsCant').innerText = stats.obs.c + " Proyectos";
-    
-    // Tarjeta En Reevaluación
-    document.getElementById('cardReevMonto').innerText = f_miles(stats.reev.m);
-    document.getElementById('cardReevCant').innerText = stats.reev.c + " Proyectos";
-
-    // Tarjeta Trámite Administrativo
-    document.getElementById('cardTramMonto').innerText = f_miles(stats.tram.m);
-    document.getElementById('countFirmaObs').innerText = stats.tram.cFirmaObs;
-    document.getElementById('countRtFirma').innerText = stats.tram.cRtFirma;
-    document.getElementById('cardTramCant').innerText = stats.tram.c + " Proyectos";
-
-    // Tarjeta Otros
-    document.getElementById('cardOthMonto').innerText = f_miles(stats.oth.m);
-    document.getElementById('cardOthCant').innerText = stats.oth.c + " Proyectos";
+    document.getElementById('cardObsCant').innerText = stats.obs + " Proyectos";
+    document.getElementById('cardReevMonto').innerText = f_miles(stats.reevM);
+    document.getElementById('cardReevCant').innerText = stats.reevC + " Proyectos";
+    document.getElementById('countFirmaObs').innerText = stats.tramFirmaObs;
+    document.getElementById('countRtFirma').innerText = stats.tramRtFirma;
+    document.getElementById('cardTramCant').innerText = stats.tramC + " Proyectos";
+    document.getElementById('cardOthCant').innerText = stats.othC + " Proyectos";
   }
 
   function exportarPDF() {
