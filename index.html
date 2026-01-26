@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control Circular 33 - Los Lagos 2026</title>
-  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   
@@ -15,61 +14,42 @@
       --reev: #d946ef; --cyan-tram: #0dcaf0;
     }
 
-    body { background-color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; color: #334155; }
+    body { background-color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; font-size: 0.9rem; color: #334155; }
     
-    /* Header Principal */
     .main-header { 
       background: linear-gradient(135deg, var(--blue-lagos) 0%, var(--accent) 100%); 
-      color: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: white; border-radius: 8px; padding: 20px; margin-bottom: 20px;
     }
     .main-header h2 { font-size: 2rem; font-weight: 700; margin-bottom: 0; }
     .main-header p { font-size: 0.875rem; margin-bottom: 0; opacity: 0.9; }
 
-    /* KPI Unificado */
-    .kpi-unified {
-      background: white; border-radius: 10px; border-top: 4px solid var(--green-rec);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; overflow: hidden; height: 100%;
-    }
+    .kpi-unified { background: white; border-radius: 10px; border-top: 4px solid var(--green-rec); box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; overflow: hidden; }
     .kpi-section { flex: 1; padding: 15px; text-align: center; min-width: 150px; }
     .kpi-divider { width: 1px; background: #f1f5f9; margin: 10px 0; }
+    .kpi-value { font-size: 2rem; font-weight: 700; color: #1e293b; margin-top: 5px; }
     
-    .kpi-label { font-size: 0.875rem; font-weight: 600; text-transform: uppercase; color: #64748b; }
-    .kpi-value { font-size: 2rem; font-weight: 700; line-height: 1.2; color: #1e293b; margin-top: 5px; }
-    
-    /* Tarjetas de Estado */
-    .status-card { border-radius: 8px; padding: 12px; color: white; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); min-height: 115px; }
+    .status-card { border-radius: 8px; padding: 12px; color: white; height: 100%; min-height: 110px; }
     .bg-obs { background: var(--orange-obs); } .bg-reev { background: var(--reev); } 
     .bg-tram-rec { background: var(--cyan-tram); color: #000; } .bg-tram-obs { background: var(--purple-tram); }
     .bg-oth { background: var(--gray-oth); }
     
-    .status-title { font-size: 1rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; display: block; line-height: 1.2; }
+    .status-title { font-size: 1rem; font-weight: 700; text-transform: uppercase; display: block; }
     .status-amount { font-size: 1.75rem; font-weight: 700; margin: 5px 0; }
     .cant-proyectos { font-size: 1.8rem; font-weight: 700; }
 
-    /* Disclaimer y Filtros */
-    .disclaimer { font-size: 0.75rem; color: #64748b; font-style: italic; margin-top: 5px; }
-    .filter-card { background: white; border-radius: 10px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-    .form-select, .form-control { font-size: 0.85rem; padding: 6px 10px; border-radius: 6px; }
-
-    /* TABLA PROFESIONAL */
-    .table { font-size: 0.85rem; margin-bottom: 0; width: 100%; }
+    .table { font-size: 0.85rem; width: 100%; border-collapse: collapse; }
     .table th { background-color: #f8fafc; color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; border-bottom: 2px solid #e2e8f0; padding: 10px; }
-    .table td { padding: 8px 10px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; }
+    .table td { padding: 8px 10px; border-bottom: 1px solid #f1f5f9; }
     
-    .col-iniciativa { min-width: 300px; white-space: normal !important; word-wrap: break-word; font-weight: 500; color: #1e293b; }
-    .badge { font-size: 0.7rem; font-weight: 600; padding: 4px 8px; border-radius: 4px; }
+    .col-iniciativa { min-width: 300px; white-space: normal !important; word-wrap: break-word; }
 
-    /* RESPONSIVIDAD */
-    @media (max-width: 768px) {
-      .main-header h2 { font-size: 1.2rem; }
-      .kpi-value { font-size: 1.5rem; }
-      .cant-proyectos { font-size: 1.4rem; }
-      .kpi-divider { display: none; }
-      .kpi-section { border-bottom: 1px solid #f1f5f9; }
-    }
+    /* Estilos exclusivos para el PDF (No se ven en la web) */
+    .pdf-report { padding: 40px; background: white; color: black; font-family: 'Segoe UI', sans-serif; }
+    .pdf-table-header { background-color: #004a87 !important; color: white !important; font-size: 10px; }
+    .pdf-kpi-box { border: 1px solid #eee; padding: 10px; margin-bottom: 20px; text-align: center; }
 
     @media print { .no-print { display: none !important; } }
-    #loader { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; text-align: center; }
+    #loader { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; }
   </style>
 </head>
 <body>
@@ -81,70 +61,70 @@
 
 <div id="dashboard" style="display:none;" class="container-fluid">
   
-  <div class="main-header">
+  <div class="main-header no-print">
     <div class="row align-items-center">
       <div class="col-12 col-md-8 text-center text-md-start">
         <h2>Iniciativas Circular 33 - Los Lagos</h2>
         <p>Reporte de Gestión 2026 - Gobierno Regional de Los Lagos</p>
       </div>
-      <div class="col-12 col-md-4 d-flex justify-content-center justify-content-md-end gap-2 no-print mt-3 mt-md-0">
+      <div class="col-12 col-md-4 d-flex justify-content-center justify-content-md-end gap-2 mt-3 mt-md-0">
         <button class="btn btn-danger btn-sm fw-bold" id="btnPDF">📄 Exportar PDF</button>
         <button class="btn btn-light btn-sm fw-bold border" id="btnActualizar">🔄 Actualizar</button>
       </div>
     </div>
   </div>
 
-  <div class="row g-3 mb-3">
+  <div class="row g-3 mb-3 no-print">
     <div class="col-lg-8">
       <div class="kpi-unified">
         <div class="kpi-section">
-          <span class="kpi-label">Costo Total</span>
+          <small class="text-muted fw-bold">Costo Total</small>
           <div id="kpiCosto" class="kpi-value">$ 0</div>
-          <div class="disclaimer">Valores en miles de pesos (M$)</div>
+          <div style="font-size: 0.75rem; font-style: italic;">Miles de pesos (M$)</div>
         </div>
         <div class="kpi-divider"></div>
         <div class="kpi-section">
-          <span class="kpi-label">Recomendados (cumple RT)</span>
+          <small class="text-muted fw-bold">Recomendados (RT)</small>
           <div id="kpiRec" class="kpi-value" style="color: var(--green-rec);">0</div>
         </div>
       </div>
     </div>
     <div class="col-lg-4">
-      <div class="status-card bg-white text-dark border border-light d-flex flex-column justify-content-center align-items-center shadow-sm">
-        <span class="kpi-label">Total de Proyectos</span>
+      <div class="status-card bg-white text-dark border d-flex flex-column justify-content-center align-items-center shadow-sm">
+        <small class="text-muted fw-bold">Total Proyectos</small>
         <div id="kpiCount" class="kpi-value" style="color: var(--blue-lagos);">0</div>
       </div>
     </div>
   </div>
 
-  <div class="filter-card no-print mb-3">
+  <div class="filter-card no-print mb-3 bg-white p-3 rounded border">
     <div class="row g-2">
       <div class="col-md-3">
-        <label class="fw-bold text-muted mb-1" style="font-size: 0.7rem;">PROVINCIA</label>
+        <label class="fw-bold text-muted small mb-1">PROVINCIA</label>
         <select id="selProv" class="form-select form-select-sm" onchange="actualizarComunas()"></select>
       </div>
       <div class="col-md-3">
-        <label class="fw-bold text-muted mb-1" style="font-size: 0.7rem;">COMUNA</label>
+        <label class="fw-bold text-muted small mb-1">COMUNA</label>
         <select id="selComuna" class="form-select form-select-sm" onchange="render()"></select>
       </div>
       <div class="col-md-6">
-        <label class="fw-bold text-muted mb-1" style="font-size: 0.7rem;">FILTRO GLOBAL (NOMBRE / BIP / FORMULADOR)</label>
-        <input type="text" id="busqueda" class="form-control form-control-sm" placeholder="Buscar..." onkeyup="render()">
+        <label class="fw-bold text-muted small mb-1">BÚSQUEDA RÁPIDA</label>
+        <input type="text" id="busqueda" class="form-control form-control-sm" placeholder="BIP, Nombre..." onkeyup="render()">
       </div>
     </div>
   </div>
 
-  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-2 mb-4 text-center">
-    <div class="col"><div class="status-card bg-tram-rec"><h6 class="status-title">Trámite Rec.</h6><div id="cardTramRecCant" class="cant-proyectos">0</div><small class="kpi-label" style="color: inherit;">Proyectos</small></div></div>
-    <div class="col"><div class="status-card bg-reev"><h6 class="status-title">En Reevaluación</h6><h3 id="cardReevMonto" class="status-amount">$ 0</h3><div id="cardReevCant" class="cant-proyectos">0</div></div></div>
-    <div class="col"><div class="status-card bg-obs"><h6 class="status-title">Observados</h6><div id="cardObsCant" class="cant-proyectos">0</div><small class="kpi-label" style="color: inherit;">Proyectos</small></div></div>
-    <div class="col"><div class="status-card bg-tram-obs"><h6 class="status-title">Trámite Obs.</h6><div id="cardTramObsCant" class="cant-proyectos">0</div><small class="kpi-label" style="color: inherit;">Proyectos</small></div></div>
-    <div class="col"><div class="status-card bg-oth"><h6 class="status-title">Otros/Eval.</h6><div id="cardOthCant" class="cant-proyectos">0</div><small class="kpi-label" style="color: inherit;">Proyectos</small></div></div>
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-2 mb-4 text-center no-print">
+    <div class="col"><div class="status-card bg-tram-rec"><span class="status-title">Trámite Rec.</span><div id="cardTramRecCant" class="cant-proyectos">0</div></div></div>
+    <div class="col"><div class="status-card bg-reev"><span class="status-title">Reevaluación</span><h3 id="cardReevMonto" class="status-amount">$ 0</h3><div id="cardReevCant" class="cant-proyectos">0</div></div></div>
+    <div class="col"><div class="status-card bg-obs"><span class="status-title">Observados</span><div id="cardObsCant" class="cant-proyectos">0</div></div></div>
+    <div class="col"><div class="status-card bg-tram-obs"><span class="status-title">Trámite Obs.</span><div id="cardTramObsCant" class="cant-proyectos">0</div></div></div>
+    <div class="col"><div class="status-card bg-oth"><span class="status-title">Evaluación</span><div id="cardOthCant" class="cant-proyectos">0</div></div></div>
   </div>
 
-  <div class="bg-white rounded border shadow-sm overflow-hidden mb-5">
+  <div class="bg-white rounded border overflow-hidden shadow-sm">
     <div class="table-responsive">
-      <table class="table table-hover align-middle">
+      <table class="table table-hover align-middle" id="mainTable">
         <thead>
           <tr>
             <th>BIP</th>
@@ -213,96 +193,107 @@
       return matchP && matchC && matchS;
     });
 
-    let totalC = 0, countRT = 0, s = { obs: 0, reevM: 0, reevC: 0, tramRec: 0, tramObs: 0, oth: 0 };
     let html = "";
-
     rows.forEach(r => {
       const val = parseInt(r[IDX.mon]?.toString().replace(/\./g, '')) || 0;
       const est = (r[IDX.est] || "").toString().trim().toUpperCase();
       const rv = (r[IDX.reev] || "").toString().trim().toUpperCase() === "SI";
-
-      if (est.includes("CUMPLE RT")) { countRT++; totalC += val; }
-      if (rv) { s.reevM += val; s.reevC++; if(!est.includes("CUMPLE RT")) totalC += val; }
-      
-      if (est.includes("OBSERVADO")) s.obs++;
-      else if (est === "RT FIRMA") s.tramRec++;
-      else if (est === "FIRMA OBS") s.tramObs++;
-      else if (!est.includes("CUMPLE RT")) s.oth++;
-
-      let badge = est.includes('RT') ? 'bg-success' : (est.includes('OBS') ? 'bg-warning text-dark' : 'bg-secondary text-white');
-
-      html += `<tr>
-        <td class="text-muted fw-bold">${r[IDX.cod]}</td>
-        <td class="col-iniciativa">${r[IDX.nom]}</td>
-        <td>${r[IDX.for] || '-'}</td>
-        <td>${r[IDX.pro]}</td>
-        <td>${r[IDX.com]}</td>
-        <td class="text-end fw-bold text-primary">${f_miles(val)}</td>
-        <td class="text-center"><span class="badge ${badge}">${est || 'PENDIENTE'}</span></td>
-      </tr>`;
+      html += `<tr><td>${r[IDX.cod]}</td><td class="col-iniciativa">${r[IDX.nom]}</td><td>${r[IDX.for]}</td><td>${r[IDX.pro]}</td><td>${r[IDX.com]}</td><td class="text-end fw-bold">${f_miles(val)}</td><td class="text-center">${est}</td></tr>`;
     });
-
     document.getElementById('tableBody').innerHTML = html;
+    
+    // Contadores simplificados
+    const totalC = rows.reduce((acc, r) => acc + (parseInt(r[IDX.mon]?.toString().replace(/\./g, '')) || 0), 0);
     document.getElementById('kpiCosto').innerText = f_miles(totalC);
-    document.getElementById('kpiRec').innerText = countRT;
+    document.getElementById('kpiRec').innerText = rows.filter(r => r[IDX.est]?.toString().toUpperCase().includes("CUMPLE RT")).length;
     document.getElementById('kpiCount').innerText = rows.length;
-    document.getElementById('cardTramRecCant').innerText = s.tramRec;
-    document.getElementById('cardReevMonto').innerText = f_miles(s.reevM);
-    document.getElementById('cardReevCant').innerText = s.reevC;
-    document.getElementById('cardObsCant').innerText = s.obs;
-    document.getElementById('cardTramObsCant').innerText = s.tramObs;
-    document.getElementById('cardOthCant').innerText = s.oth;
+    document.getElementById('cardTramRecCant').innerText = rows.filter(r => r[IDX.est] === "RT FIRMA").length;
+    document.getElementById('cardObsCant').innerText = rows.filter(r => r[IDX.est]?.toString().toUpperCase().includes("OBSERVADO")).length;
+    document.getElementById('cardTramObsCant').innerText = rows.filter(r => r[IDX.est] === "FIRMA OBS").length;
+    document.getElementById('cardOthCant').innerText = rows.filter(r => !r[IDX.est]?.toString().toUpperCase().includes("RT") && !r[IDX.est]?.toString().toUpperCase().includes("OBS")).length;
+    
+    const reevRows = rows.filter(r => r[IDX.reev]?.toString().toUpperCase() === "SI");
+    document.getElementById('cardReevCant').innerText = reevRows.length;
+    document.getElementById('cardReevMonto').innerText = f_miles(reevRows.reduce((acc, r) => acc + (parseInt(r[IDX.mon]?.toString().replace(/\./g, '')) || 0), 0));
   }
 
-  // FUNCIÓN PDF MEJORADA (SOLUCIONA EL BLANCO Y EL CORTE)
+  // --- NUEVA FUNCIÓN PDF ROBUSTA ---
   async function exportarPDF() {
     const btn = document.getElementById('btnPDF');
-    const original = document.getElementById('dashboard');
-    
-    btn.disabled = true;
-    btn.innerHTML = '⏳ Generando...';
+    btn.disabled = true; btn.innerHTML = '⏳...';
 
-    // 1. Clonar y limpiar
-    const clone = original.cloneNode(true);
-    clone.querySelectorAll('.no-print').forEach(el => el.remove());
-    
-    // 2. Preparar el contenedor del render
-    const container = document.createElement('div');
-    container.style.position = 'fixed';
-    container.style.top = '0';
-    container.style.left = '0';
-    container.style.width = '1200px'; // Ancho de escritorio para asegurar layout
-    container.style.zIndex = '-1';
-    container.style.background = 'white';
-    container.appendChild(clone);
-    document.body.appendChild(container);
+    // 1. Obtener valores actuales de las tarjetas
+    const costo = document.getElementById('kpiCosto').innerText;
+    const rt = document.getElementById('kpiRec').innerText;
+    const total = document.getElementById('kpiCount').innerText;
+    const tableHtml = document.getElementById('mainTable').outerHTML;
 
-    // 3. Forzar visibilidad de tablas
-    container.querySelectorAll('.table-responsive').forEach(el => {
-      el.style.overflow = 'visible';
-      el.style.display = 'block';
+    // 2. Crear un documento HTML limpio para el PDF (Sin CSS complejo que rompa el render)
+    const pdfTemplate = `
+      <div style="font-family: Arial, sans-serif; padding: 20px; width: 1000px;">
+        <div style="border-bottom: 3px solid #004a87; padding-bottom: 10px; margin-bottom: 20px;">
+          <h1 style="color: #004a87; margin: 0; font-size: 24px;">Reporte de Iniciativas Circular 33</h1>
+          <p style="margin: 5px 0; color: #666; font-size: 14px;">Gobierno Regional de Los Lagos - Gestión 2026</p>
+        </div>
+
+        <table style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
+          <tr>
+            <td style="width: 33%; border: 1px solid #ddd; padding: 15px; text-align: center;">
+              <span style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase;">Costo Total</span><br>
+              <strong style="font-size: 24px; color: #004a87;">${costo}</strong>
+            </td>
+            <td style="width: 33%; border: 1px solid #ddd; padding: 15px; text-align: center;">
+              <span style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase;">Recomendados (RT)</span><br>
+              <strong style="font-size: 24px; color: #10b981;">${rt}</strong>
+            </td>
+            <td style="width: 33%; border: 1px solid #ddd; padding: 15px; text-align: center;">
+              <span style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase;">Total Proyectos</span><br>
+              <strong style="font-size: 24px; color: #334155;">${total}</strong>
+            </td>
+          </tr>
+        </table>
+
+        <div style="font-size: 10px; color: #666; margin-bottom: 10px;">* Valores expresados en miles de pesos (M$)</div>
+        
+        <div style="font-size: 12px;">
+          ${tableHtml}
+        </div>
+      </div>
+    `;
+
+    const element = document.createElement('div');
+    element.innerHTML = pdfTemplate;
+
+    // Ajustar estilos de tabla dentro del PDF
+    const table = element.querySelector('table:last-child');
+    table.style.width = "100%";
+    table.style.fontSize = "10px";
+    table.style.borderCollapse = "collapse";
+    element.querySelectorAll('th').forEach(th => {
+      th.style.backgroundColor = "#f8fafc";
+      th.style.color = "#64748b";
+      th.style.border = "1px solid #e2e8f0";
+      th.style.padding = "6px";
+    });
+    element.querySelectorAll('td').forEach(td => {
+      td.style.border = "1px solid #f1f5f9";
+      td.style.padding = "6px";
     });
 
     const opt = {
       margin: 10,
-      filename: 'Reporte_Circular33_Lagos.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 1.5, useCORS: true, letterRendering: true, windowWidth: 1200 },
-      jsPDF: { unit: 'mm', format: 'legal', orientation: 'landscape' },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      filename: 'Reporte_Circular33_2026.pdf',
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'legal', orientation: 'landscape' }
     };
 
     try {
-      // Espera de seguridad para asegurar el render
-      await new Promise(r => setTimeout(r, 500));
-      await html2pdf().set(opt).from(container).save();
+      await html2pdf().set(opt).from(element).save();
     } catch (e) {
       console.error(e);
-      alert('Error al generar PDF. Intente nuevamente.');
+      alert("Error al generar PDF");
     } finally {
-      document.body.removeChild(container);
-      btn.disabled = false;
-      btn.innerHTML = '📄 Exportar PDF';
+      btn.disabled = false; btn.innerHTML = '📄 Exportar PDF';
     }
   }
 
