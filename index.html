@@ -10,59 +10,60 @@
   
   <style>
     :root { 
-      --blue-lagos: #004a87; 
-      --accent: #0072bc; 
-      --green-rec: #10b981; 
-      --orange-obs: #f59e0b; 
-      --purple-tram: #6f42c1; 
-      --gray-oth: #6c757d; 
-      --reev: #d946ef;
-      --cyan-tram: #0dcaf0;
+      --blue-lagos: #004a87; --accent: #0072bc; --green-rec: #10b981; 
+      --orange-obs: #f59e0b; --purple-tram: #6f42c1; --gray-oth: #6c757d; 
+      --reev: #d946ef; --cyan-tram: #0dcaf0;
     }
 
-    body { background-color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; font-size: 0.9rem; color: #334155; }
+    body { background-color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; color: #334155; }
     
+    /* Header Principal */
     .main-header { 
       background: linear-gradient(135deg, var(--blue-lagos) 0%, var(--accent) 100%); 
       color: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    
+    .main-header h2 { font-size: 2rem; font-weight: 700; margin-bottom: 0; }
+    .main-header p { font-size: 0.875rem; margin-bottom: 0; opacity: 0.9; }
+
+    /* KPI Unificado */
     .kpi-unified {
       background: white; border-radius: 10px; border-top: 4px solid var(--green-rec);
       box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; overflow: hidden; height: 100%;
     }
     .kpi-section { flex: 1; padding: 15px; text-align: center; min-width: 150px; }
     .kpi-divider { width: 1px; background: #f1f5f9; margin: 10px 0; }
-    .kpi-value { font-size: 1.8rem; font-weight: 700; line-height: 1.2; color: #1e293b; margin-top: 5px; }
     
-    .status-card { border-radius: 8px; padding: 12px; color: white; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); min-height: 110px; }
-    .bg-obs { background: var(--orange-obs); } 
-    .bg-reev { background: var(--reev); } 
-    .bg-tram-rec { background: var(--cyan-tram); color: #000; } 
-    .bg-tram-obs { background: var(--purple-tram); }
+    .kpi-label { font-size: 0.875rem; font-weight: 600; text-transform: uppercase; color: #64748b; }
+    .kpi-value { font-size: 2rem; font-weight: 700; line-height: 1.2; color: #1e293b; margin-top: 5px; }
+    
+    /* Tarjetas de Estado */
+    .status-card { border-radius: 8px; padding: 12px; color: white; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); min-height: 115px; }
+    .bg-obs { background: var(--orange-obs); } .bg-reev { background: var(--reev); } 
+    .bg-tram-rec { background: var(--cyan-tram); color: #000; } .bg-tram-obs { background: var(--purple-tram); }
     .bg-oth { background: var(--gray-oth); }
     
-    .cant-proyectos { font-size: 1.5rem; font-weight: 700; }
-    .status-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; display: block; line-height: 1.2; letter-spacing: 0.025em; }
+    .status-title { font-size: 1rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; display: block; line-height: 1.2; }
+    .status-amount { font-size: 1.75rem; font-weight: 700; margin: 5px 0; }
+    .cant-proyectos { font-size: 1.8rem; font-weight: 700; }
 
+    /* Disclaimer y Filtros */
+    .disclaimer { font-size: 0.75rem; color: #64748b; font-style: italic; margin-top: 5px; }
     .filter-card { background: white; border-radius: 10px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
     .form-select, .form-control { font-size: 0.85rem; padding: 6px 10px; border-radius: 6px; }
 
-    .table { font-size: 0.85rem; margin-bottom: 0; }
+    /* TABLA PROFESIONAL */
+    .table { font-size: 0.85rem; margin-bottom: 0; width: 100%; }
     .table th { background-color: #f8fafc; color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; border-bottom: 2px solid #e2e8f0; padding: 10px; }
     .table td { padding: 8px 10px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; }
     
-    .col-iniciativa { 
-      min-width: 300px; 
-      white-space: normal !important; 
-      word-wrap: break-word; 
-      font-weight: 500;
-      color: #1e293b;
-    }
-
+    .col-iniciativa { min-width: 300px; white-space: normal !important; word-wrap: break-word; font-weight: 500; color: #1e293b; }
     .badge { font-size: 0.7rem; font-weight: 600; padding: 4px 8px; border-radius: 4px; }
 
+    /* RESPONSIVIDAD */
     @media (max-width: 768px) {
+      .main-header h2 { font-size: 1.2rem; }
+      .kpi-value { font-size: 1.5rem; }
+      .cant-proyectos { font-size: 1.4rem; }
       .kpi-divider { display: none; }
       .kpi-section { border-bottom: 1px solid #f1f5f9; }
     }
@@ -75,7 +76,7 @@
 
 <div id="loader">
   <div class="spinner-border text-primary" style="width: 2.5rem; height: 2.5rem;"></div>
-  <p class="mt-3 text-secondary">Cargando reporte Circular 33...</p>
+  <p class="mt-3 text-secondary">Sincronizando Banco de Proyectos 2026...</p>
 </div>
 
 <div id="dashboard" style="display:none;" class="container-fluid">
@@ -83,8 +84,8 @@
   <div class="main-header">
     <div class="row align-items-center">
       <div class="col-12 col-md-8 text-center text-md-start">
-        <h5 class="mb-0 fw-bold">Iniciativas Circular 33 - Los Lagos</h5>
-        <p class="mb-0 opacity-75 small text-uppercase letter-spacing-1">Reporte de Gestión 2026</p>
+        <h2>Iniciativas Circular 33 - Los Lagos</h2>
+        <p>Reporte de Gestión 2026 - Gobierno Regional de Los Lagos</p>
       </div>
       <div class="col-12 col-md-4 d-flex justify-content-center justify-content-md-end gap-2 no-print mt-3 mt-md-0">
         <button class="btn btn-danger btn-sm fw-bold" id="btnPDF">📄 Exportar PDF</button>
@@ -97,20 +98,20 @@
     <div class="col-lg-8">
       <div class="kpi-unified">
         <div class="kpi-section">
-          <small class="text-muted fw-bold text-uppercase">Costo Total Selección</small>
+          <span class="kpi-label">Costo Total</span>
           <div id="kpiCosto" class="kpi-value">$ 0</div>
-          <div class="text-muted fst-italic" style="font-size: 0.7rem;">Miles de pesos (M$)</div>
+          <div class="disclaimer">Valores en miles de pesos (M$)</div>
         </div>
         <div class="kpi-divider"></div>
         <div class="kpi-section">
-          <small class="text-muted fw-bold text-uppercase">Recomendados (RT)</small>
+          <span class="kpi-label">Recomendados (cumple RT)</span>
           <div id="kpiRec" class="kpi-value" style="color: var(--green-rec);">0</div>
         </div>
       </div>
     </div>
     <div class="col-lg-4">
       <div class="status-card bg-white text-dark border border-light d-flex flex-column justify-content-center align-items-center shadow-sm">
-        <small class="text-muted fw-bold text-uppercase">Universo de Proyectos</small>
+        <span class="kpi-label">Total de Proyectos</span>
         <div id="kpiCount" class="kpi-value" style="color: var(--blue-lagos);">0</div>
       </div>
     </div>
@@ -134,11 +135,11 @@
   </div>
 
   <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-2 mb-4 text-center">
-    <div class="col"><div class="status-card bg-tram-rec"><span class="status-title">Trámite Rec.</span><div id="cardTramRecCant" class="cant-proyectos">0</div><small class="opacity-75">Proyectos</small></div></div>
-    <div class="col"><div class="status-card bg-reev"><span class="status-title">En Reevaluación</span><div id="cardReevCant" class="cant-proyectos">0</div><div id="cardReevMonto" class="fw-bold" style="font-size: 0.8rem;">$ 0</div></div></div>
-    <div class="col"><div class="status-card bg-obs"><span class="status-title">Observados</span><div id="cardObsCant" class="cant-proyectos">0</div><small class="opacity-75">Proyectos</small></div></div>
-    <div class="col"><div class="status-card bg-tram-obs"><span class="status-title">Trámite Obs.</span><div id="cardTramObsCant" class="cant-proyectos">0</div><small class="opacity-75">Proyectos</small></div></div>
-    <div class="col"><div class="status-card bg-oth"><span class="status-title">Otros/Eval.</span><div id="cardOthCant" class="cant-proyectos">0</div><small class="opacity-75">Proyectos</small></div></div>
+    <div class="col"><div class="status-card bg-tram-rec"><h6 class="status-title">Trámite Rec.</h6><div id="cardTramRecCant" class="cant-proyectos">0</div><small class="kpi-label" style="color: inherit;">Proyectos</small></div></div>
+    <div class="col"><div class="status-card bg-reev"><h6 class="status-title">En Reevaluación</h6><h3 id="cardReevMonto" class="status-amount">$ 0</h3><div id="cardReevCant" class="cant-proyectos">0</div></div></div>
+    <div class="col"><div class="status-card bg-obs"><h6 class="status-title">Observados</h6><div id="cardObsCant" class="cant-proyectos">0</div><small class="kpi-label" style="color: inherit;">Proyectos</small></div></div>
+    <div class="col"><div class="status-card bg-tram-obs"><h6 class="status-title">Trámite Obs.</h6><div id="cardTramObsCant" class="cant-proyectos">0</div><small class="kpi-label" style="color: inherit;">Proyectos</small></div></div>
+    <div class="col"><div class="status-card bg-oth"><h6 class="status-title">Otros/Eval.</h6><div id="cardOthCant" class="cant-proyectos">0</div><small class="kpi-label" style="color: inherit;">Proyectos</small></div></div>
   </div>
 
   <div class="bg-white rounded border shadow-sm overflow-hidden mb-5">
@@ -171,20 +172,13 @@
       const resp = await fetch(API_URL);
       const data = await resp.json();
       DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().toUpperCase() !== "BIP");
-      
       poblarProvincias();
       actualizarComunas();
-      
       document.getElementById('loader').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
-      
       document.getElementById('btnActualizar').onclick = () => window.location.reload();
       document.getElementById('btnPDF').onclick = exportarPDF;
-      
-    } catch (e) { 
-      console.error('Error de inicialización:', e);
-      document.getElementById('loader').innerHTML = '<small class="text-danger">Error de sincronización. Por favor intente refrescar la página.</small>';
-    }
+    } catch (e) { console.error(e); }
   }
 
   function poblarProvincias() {
@@ -204,11 +198,7 @@
     render();
   }
 
-  // Mejoramos la extracción de números para evitar errores con puntos de miles
-  const f_miles = (n) => {
-    const val = typeof n === 'number' ? n : parseInt(n.toString().replace(/\./g, '')) || 0;
-    return "$" + (Math.round(val / 1000)).toLocaleString('es-CL');
-  };
+  const f_miles = (n) => "$" + (Math.round(parseInt(n.toString().replace(/\./g, '')) / 1000)).toLocaleString('es-CL');
 
   function render() {
     const fP = document.getElementById('selProv').value, fC = document.getElementById('selComuna').value,
@@ -227,8 +217,7 @@
     let html = "";
 
     rows.forEach(r => {
-      const valRaw = r[IDX.mon]?.toString().replace(/\./g, '') || "0";
-      const val = parseInt(valRaw) || 0;
+      const val = parseInt(r[IDX.mon]?.toString().replace(/\./g, '')) || 0;
       const est = (r[IDX.est] || "").toString().trim().toUpperCase();
       const rv = (r[IDX.reev] || "").toString().trim().toUpperCase() === "SI";
 
@@ -265,60 +254,53 @@
     document.getElementById('cardOthCant').innerText = s.oth;
   }
 
-  // FUNCIÓN DE EXPORTACIÓN REFINADA
+  // FUNCIÓN PDF MEJORADA (SOLUCIONA EL BLANCO Y EL CORTE)
   async function exportarPDF() {
     const btn = document.getElementById('btnPDF');
-    const originalElement = document.getElementById('dashboard');
+    const original = document.getElementById('dashboard');
     
     btn.disabled = true;
     btn.innerHTML = '⏳ Generando...';
 
-    // Clonamos el dashboard
-    const clone = originalElement.cloneNode(true);
-    clone.id = "pdf-clone"; // Cambiamos ID para evitar duplicados
-    
-    // Limpieza del clon
+    // 1. Clonar y limpiar
+    const clone = original.cloneNode(true);
     clone.querySelectorAll('.no-print').forEach(el => el.remove());
     
-    // Ajustes de tabla en el clon
-    clone.querySelectorAll('.table-responsive').forEach(el => {
+    // 2. Preparar el contenedor del render
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.top = '0';
+    container.style.left = '0';
+    container.style.width = '1200px'; // Ancho de escritorio para asegurar layout
+    container.style.zIndex = '-1';
+    container.style.background = 'white';
+    container.appendChild(clone);
+    document.body.appendChild(container);
+
+    // 3. Forzar visibilidad de tablas
+    container.querySelectorAll('.table-responsive').forEach(el => {
       el.style.overflow = 'visible';
       el.style.display = 'block';
     });
 
-    // Configuramos un contenedor visible pero oculto para el renderizado
-    const offscreenContainer = document.createElement('div');
-    offscreenContainer.style.position = 'fixed';
-    offscreenContainer.style.top = '0';
-    offscreenContainer.style.left = '0';
-    offscreenContainer.style.width = '1200px'; // Ancho fijo para asegurar layout de escritorio
-    offscreenContainer.style.zIndex = '-1';
-    offscreenContainer.style.background = 'white';
-    offscreenContainer.appendChild(clone);
-    document.body.appendChild(offscreenContainer);
-
     const opt = {
       margin: 10,
-      filename: 'Reporte_Circular33_Lagos_2026.pdf',
+      filename: 'Reporte_Circular33_Lagos.pdf',
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {
-        scale: 1.5, // Bajamos escala a 1.5 para mayor estabilidad en memoria
-        useCORS: true,
-        letterRendering: true,
-        logging: false
-      },
+      html2canvas: { scale: 1.5, useCORS: true, letterRendering: true, windowWidth: 1200 },
       jsPDF: { unit: 'mm', format: 'legal', orientation: 'landscape' },
       pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
     try {
-      await html2pdf().set(opt).from(offscreenContainer).save();
+      // Espera de seguridad para asegurar el render
+      await new Promise(r => setTimeout(r, 500));
+      await html2pdf().set(opt).from(container).save();
     } catch (e) {
-      console.error('Error al generar PDF:', e);
-      alert('Error al generar el PDF. El archivo es muy grande o el navegador bloqueó la descarga.');
+      console.error(e);
+      alert('Error al generar PDF. Intente nuevamente.');
     } finally {
-      // Limpieza absoluta
-      document.body.removeChild(offscreenContainer);
+      document.body.removeChild(container);
       btn.disabled = false;
       btn.innerHTML = '📄 Exportar PDF';
     }
