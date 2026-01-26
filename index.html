@@ -20,6 +20,7 @@
       --cyan-tram: #0dcaf0;
     }
 
+    /* Tipografía profesional: tamaño base reducido */
     body { background-color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; font-size: 0.9rem; color: #334155; }
     
     .main-header { 
@@ -27,6 +28,7 @@
       color: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
+    /* KPI Unificado - Estilo Compacto */
     .kpi-unified {
       background: white; border-radius: 10px; border-top: 4px solid var(--green-rec);
       box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; overflow: hidden; height: 100%;
@@ -35,6 +37,7 @@
     .kpi-divider { width: 1px; background: #f1f5f9; margin: 10px 0; }
     .kpi-value { font-size: 1.8rem; font-weight: 700; line-height: 1.2; color: #1e293b; margin-top: 5px; }
     
+    /* Tarjetas de Estado - Más densas */
     .status-card { border-radius: 8px; padding: 12px; color: white; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); min-height: 110px; }
     .bg-obs { background: var(--orange-obs); } 
     .bg-reev { background: var(--reev); } 
@@ -45,13 +48,16 @@
     .cant-proyectos { font-size: 1.5rem; font-weight: 700; }
     .status-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; display: block; line-height: 1.2; letter-spacing: 0.025em; }
 
+    /* Estilo de filtros compacto */
     .filter-card { background: white; border-radius: 10px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
     .form-select, .form-control { font-size: 0.85rem; padding: 6px 10px; border-radius: 6px; }
 
-    .table { font-size: 0.85rem; margin-bottom: 0; width: 100%; }
+    /* TABLA: Estilo High-Density Profesional */
+    .table { font-size: 0.85rem; margin-bottom: 0; }
     .table th { background-color: #f8fafc; color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; border-bottom: 2px solid #e2e8f0; padding: 10px; }
     .table td { padding: 8px 10px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; }
     
+    /* Columna Iniciativa: Texto completo pero contenido */
     .col-iniciativa { 
       min-width: 300px; 
       white-space: normal !important; 
@@ -66,10 +72,6 @@
       .kpi-divider { display: none; }
       .kpi-section { border-bottom: 1px solid #f1f5f9; }
     }
-
-    /* Estilos específicos para evitar cortes en el PDF */
-    .pdf-fix { width: 1200px !important; background: white !important; padding: 20px !important; }
-    .pdf-table-fix { display: table !important; width: 100% !important; overflow: visible !important; }
 
     @media print { .no-print { display: none !important; } }
     #loader { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; text-align: center; }
@@ -175,12 +177,16 @@
       const resp = await fetch(API_URL);
       const data = await resp.json();
       DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().toUpperCase() !== "BIP");
+      
       poblarProvincias();
       actualizarComunas();
+      
       document.getElementById('loader').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
+      
       document.getElementById('btnActualizar').onclick = () => window.location.reload();
       document.getElementById('btnPDF').onclick = exportarPDF;
+      
     } catch (e) { 
       console.error(e);
       document.getElementById('loader').innerHTML = '<small class="text-danger">Error de sincronización.</small>';
@@ -260,53 +266,26 @@
     document.getElementById('cardOthCant').innerText = s.oth;
   }
 
-  // --- MEJORA DE GENERACIÓN DE PDF ---
   async function exportarPDF() {
     const btn = document.getElementById('btnPDF');
-    btn.disabled = true;
-    btn.innerHTML = '⏳ Generando...';
+    btn.disabled = true; btn.innerHTML = '⏳...';
     
     const element = document.getElementById('dashboard');
-    
-    // Clonar para no afectar la vista del usuario
     const clone = element.cloneNode(true);
-    
-    // Configurar el clon para el PDF
-    clone.classList.add('pdf-fix');
     clone.querySelectorAll('.no-print').forEach(el => el.remove());
-    
-    // REPARACIÓN CRÍTICA: Desactivar scroll horizontal en la tabla para el PDF
-    clone.querySelectorAll('.table-responsive').forEach(el => {
-      el.style.overflow = 'visible';
-      el.style.display = 'block';
-    });
-    clone.querySelectorAll('table').forEach(el => {
-      el.style.width = '100%';
-    });
+    clone.style.width = '1400px';
 
     const opt = { 
-      margin: [10, 10, 10, 10], 
-      filename: 'Reporte_Circular33_Lagos_2026.pdf',
+      margin: 8, filename: 'Reporte_C33_Lagos.pdf',
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { 
-        scale: 2, 
-        useCORS: true, 
-        logging: false,
-        letterRendering: true,
-        windowWidth: 1400 // Forzar un ancho de ventana mayor para evitar cortes
-      }, 
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape', compress: true },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      html2canvas: { scale: 1.5, useCORS: true }, 
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
     };
     
     try {
       await html2pdf().set(opt).from(clone).save();
-    } catch (e) { 
-      console.error('Error al generar PDF:', e);
-      alert('Error al generar el PDF. Intente refrescar la página.');
-    } finally {
-      btn.disabled = false;
-      btn.innerHTML = '📄 Exportar PDF';
+    } catch (e) { console.error(e); } finally {
+      btn.disabled = false; btn.innerHTML = '📄 Exportar PDF';
     }
   }
 
