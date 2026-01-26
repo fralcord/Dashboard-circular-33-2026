@@ -20,7 +20,6 @@
       --cyan-tram: #0dcaf0;
     }
 
-    /* Tipografía profesional: tamaño base reducido */
     body { background-color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; font-size: 0.9rem; color: #334155; }
     
     .main-header { 
@@ -28,7 +27,6 @@
       color: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
-    /* KPI Unificado - Estilo Compacto */
     .kpi-unified {
       background: white; border-radius: 10px; border-top: 4px solid var(--green-rec);
       box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; overflow: hidden; height: 100%;
@@ -37,7 +35,6 @@
     .kpi-divider { width: 1px; background: #f1f5f9; margin: 10px 0; }
     .kpi-value { font-size: 1.8rem; font-weight: 700; line-height: 1.2; color: #1e293b; margin-top: 5px; }
     
-    /* Tarjetas de Estado - Más densas */
     .status-card { border-radius: 8px; padding: 12px; color: white; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); min-height: 110px; }
     .bg-obs { background: var(--orange-obs); } 
     .bg-reev { background: var(--reev); } 
@@ -48,16 +45,13 @@
     .cant-proyectos { font-size: 1.5rem; font-weight: 700; }
     .status-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; display: block; line-height: 1.2; letter-spacing: 0.025em; }
 
-    /* Estilo de filtros compacto */
     .filter-card { background: white; border-radius: 10px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
     .form-select, .form-control { font-size: 0.85rem; padding: 6px 10px; border-radius: 6px; }
 
-    /* TABLA: Estilo High-Density Profesional */
     .table { font-size: 0.85rem; margin-bottom: 0; }
     .table th { background-color: #f8fafc; color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; border-bottom: 2px solid #e2e8f0; padding: 10px; }
     .table td { padding: 8px 10px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; }
     
-    /* Columna Iniciativa: Texto completo pero contenido */
     .col-iniciativa { 
       min-width: 300px; 
       white-space: normal !important; 
@@ -188,8 +182,8 @@
       document.getElementById('btnPDF').onclick = exportarPDF;
       
     } catch (e) { 
-      console.error(e);
-      document.getElementById('loader').innerHTML = '<small class="text-danger">Error de sincronización.</small>';
+      console.error('Error de inicialización:', e);
+      document.getElementById('loader').innerHTML = '<small class="text-danger">Error de sincronización. Por favor intente refrescar la página.</small>';
     }
   }
 
@@ -210,7 +204,11 @@
     render();
   }
 
-  const f_miles = (n) => "$" + (Math.round(n / 1000)).toLocaleString('es-CL');
+  // Mejoramos la extracción de números para evitar errores con puntos de miles
+  const f_miles = (n) => {
+    const val = typeof n === 'number' ? n : parseInt(n.toString().replace(/\./g, '')) || 0;
+    return "$" + (Math.round(val / 1000)).toLocaleString('es-CL');
+  };
 
   function render() {
     const fP = document.getElementById('selProv').value, fC = document.getElementById('selComuna').value,
@@ -229,7 +227,8 @@
     let html = "";
 
     rows.forEach(r => {
-      const val = parseInt(r[IDX.mon]) || 0;
+      const valRaw = r[IDX.mon]?.toString().replace(/\./g, '') || "0";
+      const val = parseInt(valRaw) || 0;
       const est = (r[IDX.est] || "").toString().trim().toUpperCase();
       const rv = (r[IDX.reev] || "").toString().trim().toUpperCase() === "SI";
 
@@ -266,85 +265,65 @@
     document.getElementById('cardOthCant').innerText = s.oth;
   }
 
-  // --- FUNCIÓN DEFINITIVA: ESCALADO Y AJUSTE A OFICIO/LEGAL ---
+  // FUNCIÓN DE EXPORTACIÓN REFINADA
   async function exportarPDF() {
     const btn = document.getElementById('btnPDF');
     const originalElement = document.getElementById('dashboard');
     
     btn.disabled = true;
-    btn.innerHTML = '⏳ Optimizando escala...';
+    btn.innerHTML = '⏳ Generando...';
 
-    // 1. Creamos un contenedor temporal para el escalado
-    const pdfContainer = document.createElement('div');
-    pdfContainer.style.width = '1080px'; // Ancho óptimo para escala Legal Horizontal
-    pdfContainer.style.background = 'white';
-    pdfContainer.style.padding = '20px';
-    pdfContainer.style.position = 'absolute';
-    pdfContainer.style.left = '-10000px'; // Lo sacamos de la vista
-
-    // 2. Clonamos el contenido
+    // Clonamos el dashboard
     const clone = originalElement.cloneNode(true);
+    clone.id = "pdf-clone"; // Cambiamos ID para evitar duplicados
     
-    // 3. Limpieza de elementos innecesarios
+    // Limpieza del clon
     clone.querySelectorAll('.no-print').forEach(el => el.remove());
     
-    // 4. FIX DE TABLAS: Forzamos la expansión para evitar cortes laterales
+    // Ajustes de tabla en el clon
     clone.querySelectorAll('.table-responsive').forEach(el => {
       el.style.overflow = 'visible';
       el.style.display = 'block';
-      el.style.width = '100%';
-    });
-    clone.querySelectorAll('table').forEach(table => {
-      table.style.width = '100%';
-      table.style.tableLayout = 'auto'; // Permite que las columnas se ajusten al contenido
     });
 
-    // 5. FIX DE TARJETAS: Aseguramos que el grid de Bootstrap no se rompa
-    clone.querySelectorAll('.row').forEach(row => {
-      row.style.display = 'flex';
-      row.style.flexWrap = 'nowrap'; // Evita que las tarjetas se apilen verticalmente
-      row.style.gap = '10px';
-    });
-    clone.querySelectorAll('.col, .col-lg-8, .col-lg-4').forEach(col => {
-      col.style.flex = '1 1 auto';
-    });
+    // Configuramos un contenedor visible pero oculto para el renderizado
+    const offscreenContainer = document.createElement('div');
+    offscreenContainer.style.position = 'fixed';
+    offscreenContainer.style.top = '0';
+    offscreenContainer.style.left = '0';
+    offscreenContainer.style.width = '1200px'; // Ancho fijo para asegurar layout de escritorio
+    offscreenContainer.style.zIndex = '-1';
+    offscreenContainer.style.background = 'white';
+    offscreenContainer.appendChild(clone);
+    document.body.appendChild(offscreenContainer);
 
-    pdfContainer.appendChild(clone);
-    document.body.appendChild(pdfContainer);
-
-    // 6. Configuración del PDF (Tamaño Oficio/Legal)
     const opt = {
       margin: 10,
       filename: 'Reporte_Circular33_Lagos_2026.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: {
-        scale: 2,           // Nitidez alta
+        scale: 1.5, // Bajamos escala a 1.5 para mayor estabilidad en memoria
         useCORS: true,
         letterRendering: true,
-        width: 1080,        // Captura exactamente el ancho de nuestro contenedor
-        scrollY: 0,
-        scrollX: 0
+        logging: false
       },
-      jsPDF: { 
-        unit: 'mm', 
-        format: 'legal',    // Tamaño Oficio
-        orientation: 'landscape' 
-      },
+      jsPDF: { unit: 'mm', format: 'legal', orientation: 'landscape' },
       pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
     try {
-      await html2pdf().set(opt).from(pdfContainer).save();
+      await html2pdf().set(opt).from(offscreenContainer).save();
     } catch (e) {
-      console.error('Error:', e);
-      alert('Error al generar el PDF. Intente nuevamente.');
+      console.error('Error al generar PDF:', e);
+      alert('Error al generar el PDF. El archivo es muy grande o el navegador bloqueó la descarga.');
     } finally {
-      // Limpieza: Eliminamos el contenedor temporal y reactivamos botones
-      document.body.removeChild(pdfContainer);
+      // Limpieza absoluta
+      document.body.removeChild(offscreenContainer);
       btn.disabled = false;
       btn.innerHTML = '📄 Exportar PDF';
     }
   }
+
   init();
 </script>
 </body>
