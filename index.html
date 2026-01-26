@@ -20,33 +20,21 @@
       --cyan-tram: #0dcaf0;
     }
 
-    body { background-color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; color: #334155; }
+    body { background-color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; padding: 10px; font-size: 0.9rem; color: #334155; }
     
-    /* Título Principal */
-    .main-header h2 { font-size: 2rem; font-weight: 700; margin-bottom: 0; }
-    /* Subtítulo Institución */
-    .main-header p { font-size: 0.875rem; margin-bottom: 0; opacity: 0.9; }
-
     .main-header { 
       background: linear-gradient(135deg, var(--blue-lagos) 0%, var(--accent) 100%); 
       color: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
-    /* KPI Unificado */
     .kpi-unified {
       background: white; border-radius: 10px; border-top: 4px solid var(--green-rec);
       box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; overflow: hidden; height: 100%;
     }
     .kpi-section { flex: 1; padding: 15px; text-align: center; min-width: 150px; }
     .kpi-divider { width: 1px; background: #f1f5f9; margin: 10px 0; }
+    .kpi-value { font-size: 1.8rem; font-weight: 700; line-height: 1.2; color: #1e293b; margin-top: 5px; }
     
-    /* Nombre indicador KPI */
-    .kpi-section small, .status-card small { font-size: 0.875rem; font-weight: 600; text-transform: uppercase; }
-    
-    /* Valor KPI (h2) */
-    .kpi-value { font-size: 2rem; font-weight: 700; line-height: 1.2; color: #1e293b; margin-top: 5px; }
-    
-    /* Tarjetas de Estado */
     .status-card { border-radius: 8px; padding: 12px; color: white; height: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.05); min-height: 110px; }
     .bg-obs { background: var(--orange-obs); } 
     .bg-reev { background: var(--reev); } 
@@ -54,24 +42,13 @@
     .bg-tram-obs { background: var(--purple-tram); }
     .bg-oth { background: var(--gray-oth); }
     
-    /* Título estado (h6) */
-    .status-title { font-size: 1rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; display: block; line-height: 1.2; }
+    .cant-proyectos { font-size: 1.5rem; font-weight: 700; }
+    .status-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; display: block; line-height: 1.2; letter-spacing: 0.025em; }
 
-    /* Monto estado (h3) */
-    .status-amount { font-size: 1.75rem; font-weight: 700; margin: 5px 0; }
-
-    /* Cantidad proyectos */
-    .cant-proyectos { font-size: 1.8rem; font-weight: 700; }
-
-    /* Disclaimer */
-    .disclaimer { font-size: 0.75rem; color: #64748b; font-style: italic; }
-
-    /* Filtros */
     .filter-card { background: white; border-radius: 10px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
     .form-select, .form-control { font-size: 0.85rem; padding: 6px 10px; border-radius: 6px; }
 
-    /* TABLA: Detalle profesional */
-    .table { font-size: 0.85rem; margin-bottom: 0; }
+    .table { font-size: 0.85rem; margin-bottom: 0; width: 100%; }
     .table th { background-color: #f8fafc; color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 0.75rem; border-bottom: 2px solid #e2e8f0; padding: 10px; }
     .table td { padding: 8px 10px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; }
     
@@ -85,14 +62,14 @@
 
     .badge { font-size: 0.7rem; font-weight: 600; padding: 4px 8px; border-radius: 4px; }
 
-    /* RESPONSIVIDAD (Móvil) */
     @media (max-width: 768px) {
-      .main-header h2 { font-size: 1.2rem; }
-      .kpi-value { font-size: 1.5rem; }
-      .cant-proyectos { font-size: 1.4rem; }
       .kpi-divider { display: none; }
       .kpi-section { border-bottom: 1px solid #f1f5f9; }
     }
+
+    /* Estilos específicos para evitar cortes en el PDF */
+    .pdf-fix { width: 1200px !important; background: white !important; padding: 20px !important; }
+    .pdf-table-fix { display: table !important; width: 100% !important; overflow: visible !important; }
 
     @media print { .no-print { display: none !important; } }
     #loader { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 80vh; text-align: center; }
@@ -110,8 +87,8 @@
   <div class="main-header">
     <div class="row align-items-center">
       <div class="col-12 col-md-8 text-center text-md-start">
-        <h2>Iniciativas Circular 33 - Los Lagos</h2>
-        <p>Reporte de Gestión 2026 - Gobierno Regional de Los Lagos</p>
+        <h5 class="mb-0 fw-bold">Iniciativas Circular 33 - Los Lagos</h5>
+        <p class="mb-0 opacity-75 small text-uppercase letter-spacing-1">Reporte de Gestión 2026</p>
       </div>
       <div class="col-12 col-md-4 d-flex justify-content-center justify-content-md-end gap-2 no-print mt-3 mt-md-0">
         <button class="btn btn-danger btn-sm fw-bold" id="btnPDF">📄 Exportar PDF</button>
@@ -124,20 +101,20 @@
     <div class="col-lg-8">
       <div class="kpi-unified">
         <div class="kpi-section">
-          <small class="text-muted">Costo Total</small>
+          <small class="text-muted fw-bold text-uppercase">Costo Total Selección</small>
           <div id="kpiCosto" class="kpi-value">$ 0</div>
-          <div class="disclaimer">Valores en miles de pesos (M$)</div>
+          <div class="text-muted fst-italic" style="font-size: 0.7rem;">Miles de pesos (M$)</div>
         </div>
         <div class="kpi-divider"></div>
         <div class="kpi-section">
-          <small class="text-muted">Recomendados (cumple RT)</small>
+          <small class="text-muted fw-bold text-uppercase">Recomendados (RT)</small>
           <div id="kpiRec" class="kpi-value" style="color: var(--green-rec);">0</div>
         </div>
       </div>
     </div>
     <div class="col-lg-4">
       <div class="status-card bg-white text-dark border border-light d-flex flex-column justify-content-center align-items-center shadow-sm">
-        <small class="text-muted">Total de Proyectos</small>
+        <small class="text-muted fw-bold text-uppercase">Universo de Proyectos</small>
         <div id="kpiCount" class="kpi-value" style="color: var(--blue-lagos);">0</div>
       </div>
     </div>
@@ -161,41 +138,11 @@
   </div>
 
   <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-2 mb-4 text-center">
-    <div class="col">
-      <div class="status-card bg-tram-rec">
-        <h6 class="status-title">En Trámite para Recomendación</h6>
-        <div id="cardTramRecCant" class="cant-proyectos">0</div>
-        <small>Proyectos</small>
-      </div>
-    </div>
-    <div class="col">
-      <div class="status-card bg-reev">
-        <h6 class="status-title">En Reevaluación</h6>
-        <h3 id="cardReevMonto" class="status-amount">$ 0</h3>
-        <div id="cardReevCant" class="cant-proyectos">0</div>
-      </div>
-    </div>
-    <div class="col">
-      <div class="status-card bg-obs">
-        <h6 class="status-title">Observados</h6>
-        <div id="cardObsCant" class="cant-proyectos">0</div>
-        <small>Proyectos</small>
-      </div>
-    </div>
-    <div class="col">
-      <div class="status-card bg-tram-obs">
-        <h6 class="status-title">En Trámite para Observación</h6>
-        <div id="cardTramObsCant" class="cant-proyectos">0</div>
-        <small>Proyectos</small>
-      </div>
-    </div>
-    <div class="col">
-      <div class="status-card bg-oth">
-        <h6 class="status-title">En evaluación / Otros estados</h6>
-        <div id="cardOthCant" class="cant-proyectos">0</div>
-        <small>Proyectos</small>
-      </div>
-    </div>
+    <div class="col"><div class="status-card bg-tram-rec"><span class="status-title">Trámite Rec.</span><div id="cardTramRecCant" class="cant-proyectos">0</div><small class="opacity-75">Proyectos</small></div></div>
+    <div class="col"><div class="status-card bg-reev"><span class="status-title">En Reevaluación</span><div id="cardReevCant" class="cant-proyectos">0</div><div id="cardReevMonto" class="fw-bold" style="font-size: 0.8rem;">$ 0</div></div></div>
+    <div class="col"><div class="status-card bg-obs"><span class="status-title">Observados</span><div id="cardObsCant" class="cant-proyectos">0</div><small class="opacity-75">Proyectos</small></div></div>
+    <div class="col"><div class="status-card bg-tram-obs"><span class="status-title">Trámite Obs.</span><div id="cardTramObsCant" class="cant-proyectos">0</div><small class="opacity-75">Proyectos</small></div></div>
+    <div class="col"><div class="status-card bg-oth"><span class="status-title">Otros/Eval.</span><div id="cardOthCant" class="cant-proyectos">0</div><small class="opacity-75">Proyectos</small></div></div>
   </div>
 
   <div class="bg-white rounded border shadow-sm overflow-hidden mb-5">
@@ -313,26 +260,53 @@
     document.getElementById('cardOthCant').innerText = s.oth;
   }
 
+  // --- MEJORA DE GENERACIÓN DE PDF ---
   async function exportarPDF() {
     const btn = document.getElementById('btnPDF');
-    btn.disabled = true; btn.innerHTML = '⏳...';
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Generando...';
     
     const element = document.getElementById('dashboard');
+    
+    // Clonar para no afectar la vista del usuario
     const clone = element.cloneNode(true);
+    
+    // Configurar el clon para el PDF
+    clone.classList.add('pdf-fix');
     clone.querySelectorAll('.no-print').forEach(el => el.remove());
-    clone.style.width = '1400px';
+    
+    // REPARACIÓN CRÍTICA: Desactivar scroll horizontal en la tabla para el PDF
+    clone.querySelectorAll('.table-responsive').forEach(el => {
+      el.style.overflow = 'visible';
+      el.style.display = 'block';
+    });
+    clone.querySelectorAll('table').forEach(el => {
+      el.style.width = '100%';
+    });
 
     const opt = { 
-      margin: 8, filename: 'Reporte_C33_Lagos.pdf',
+      margin: [10, 10, 10, 10], 
+      filename: 'Reporte_Circular33_Lagos_2026.pdf',
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 1.5, useCORS: true }, 
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
+      html2canvas: { 
+        scale: 2, 
+        useCORS: true, 
+        logging: false,
+        letterRendering: true,
+        windowWidth: 1400 // Forzar un ancho de ventana mayor para evitar cortes
+      }, 
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape', compress: true },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
     
     try {
       await html2pdf().set(opt).from(clone).save();
-    } catch (e) { console.error(e); } finally {
-      btn.disabled = false; btn.innerHTML = '📄 Exportar PDF';
+    } catch (e) { 
+      console.error('Error al generar PDF:', e);
+      alert('Error al generar el PDF. Intente refrescar la página.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '📄 Exportar PDF';
     }
   }
 
