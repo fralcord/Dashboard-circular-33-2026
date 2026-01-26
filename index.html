@@ -266,26 +266,61 @@
     document.getElementById('cardOthCant').innerText = s.oth;
   }
 
+  // --- FUNCIÓN MEJORADA PARA PDF TAMAÑO OFICIO / LEGAL ---
   async function exportarPDF() {
     const btn = document.getElementById('btnPDF');
-    btn.disabled = true; btn.innerHTML = '⏳...';
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Generando...';
     
     const element = document.getElementById('dashboard');
+    
+    // Clonamos para no afectar la vista del usuario
     const clone = element.cloneNode(true);
+    
+    // Limpieza y preparación del clon
     clone.querySelectorAll('.no-print').forEach(el => el.remove());
-    clone.style.width = '1400px';
+    
+    // REPARACIÓN CRÍTICA: Forzamos la tabla a expandirse totalmente
+    // Esto evita los cortes laterales detectados en reportes anteriores
+    clone.querySelectorAll('.table-responsive').forEach(el => {
+      el.style.overflow = 'visible';
+      el.style.display = 'block';
+    });
+    
+    clone.querySelectorAll('table').forEach(el => {
+      el.style.width = '100%';
+    });
 
+    // Configuración para tamaño Oficio (Legal) en Horizontal
+    // Dimensiones Oficio: 215.9mm x 355.6mm
     const opt = { 
-      margin: 8, filename: 'Reporte_C33_Lagos.pdf',
+      margin: [10, 10, 10, 10], 
+      filename: 'Reporte_Circular33_Lagos_2026.pdf',
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 1.5, useCORS: true }, 
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
+      html2canvas: { 
+        scale: 2,           // Alta resolución
+        useCORS: true, 
+        logging: false,
+        letterRendering: true,
+        windowWidth: 1600   // Fuerza ancho de escritorio para evitar amontonamiento
+      }, 
+      jsPDF: { 
+        unit: 'mm', 
+        format: 'legal',    // Tamaño Oficio (Legal)
+        orientation: 'landscape', 
+        compress: true 
+      },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } 
     };
     
     try {
       await html2pdf().set(opt).from(clone).save();
-    } catch (e) { console.error(e); } finally {
-      btn.disabled = false; btn.innerHTML = '📄 Exportar PDF';
+    } catch (e) { 
+      console.error('Error al generar PDF:', e);
+      alert('Error técnico al generar el PDF. Intente nuevamente.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '📄 Exportar PDF';
     }
   }
 
