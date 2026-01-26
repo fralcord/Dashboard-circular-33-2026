@@ -129,3 +129,214 @@
           <div class="disclaimer">Valores en miles de pesos (M$)</div>
         </div>
         <div class="kpi-divider"></div>
+        <div class="kpi-section">
+          <small class="text-muted">Recomendados (RT)</small>
+          <div id="kpiRec" class="kpi-value" style="color: var(--green-rec);">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="status-card bg-white text-dark border border-light d-flex flex-column justify-content-center align-items-center shadow-sm">
+        <small class="text-muted">Universo de Proyectos</small>
+        <div id="kpiCount" class="kpi-value" style="color: var(--blue-lagos);">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-card no-print mb-3">
+    <div class="row g-2">
+      <div class="col-md-3">
+        <label class="fw-bold text-muted mb-1" style="font-size: 0.7rem;">PROVINCIA</label>
+        <select id="selProv" class="form-select form-select-sm" onchange="actualizarComunas()"></select>
+      </div>
+      <div class="col-md-3">
+        <label class="fw-bold text-muted mb-1" style="font-size: 0.7rem;">COMUNA</label>
+        <select id="selComuna" class="form-select form-select-sm" onchange="render()"></select>
+      </div>
+      <div class="col-md-6">
+        <label class="fw-bold text-muted mb-1" style="font-size: 0.7rem;">FILTRO GLOBAL (NOMBRE / BIP / FORMULADOR)</label>
+        <input type="text" id="busqueda" class="form-control form-control-sm" placeholder="Buscar..." onkeyup="render()">
+      </div>
+    </div>
+  </div>
+
+  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-2 mb-4 text-center">
+    <div class="col">
+      <div class="status-card bg-tram-rec">
+        <h6 class="status-title">Trámite Rec.</h6>
+        <div id="cardTramRecCant" class="cant-proyectos">0</div>
+        <small>Proyectos</small>
+      </div>
+    </div>
+    <div class="col">
+      <div class="status-card bg-reev">
+        <h6 class="status-title">En Reevaluación</h6>
+        <h3 id="cardReevMonto" class="status-amount">$ 0</h3>
+        <div id="cardReevCant" class="cant-proyectos">0</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="status-card bg-obs">
+        <h6 class="status-title">Observados</h6>
+        <div id="cardObsCant" class="cant-proyectos">0</div>
+        <small>Proyectos</small>
+      </div>
+    </div>
+    <div class="col">
+      <div class="status-card bg-tram-obs">
+        <h6 class="status-title">Trámite Obs.</h6>
+        <div id="cardTramObsCant" class="cant-proyectos">0</div>
+        <small>Proyectos</small>
+      </div>
+    </div>
+    <div class="col">
+      <div class="status-card bg-oth">
+        <h6 class="status-title">Otros/Eval.</h6>
+        <div id="cardOthCant" class="cant-proyectos">0</div>
+        <small>Proyectos</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded border shadow-sm overflow-hidden mb-5">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>BIP</th>
+            <th class="col-iniciativa">Iniciativa</th>
+            <th>Formulador</th>
+            <th>Provincia</th>
+            <th>Comuna</th>
+            <th class="text-end">Monto (M$)</th>
+            <th class="text-center">Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzslo__5lmVv9l2GFrEjKeQ_IgP8wneeqDddXTXWfd_kVjNAU7KnF1HdLarRAOTZCFP/exec"; 
+  let DB = [];
+  const IDX = { pro: 5, com: 6, for: 7, cod: 8, nom: 9, mon: 10, est: 12, reev: 27 };
+
+  async function init() {
+    try {
+      const resp = await fetch(API_URL);
+      const data = await resp.json();
+      DB = data.filter(r => r[IDX.cod] && r[IDX.cod].toString().toUpperCase() !== "BIP");
+      poblarProvincias();
+      actualizarComunas();
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      document.getElementById('btnActualizar').onclick = () => window.location.reload();
+      document.getElementById('btnPDF').onclick = exportarPDF;
+    } catch (e) { 
+      console.error(e);
+      document.getElementById('loader').innerHTML = '<small class="text-danger">Error de sincronización.</small>';
+    }
+  }
+
+  function poblarProvincias() {
+    const list = [...new Set(DB.map(r => r[IDX.pro]?.toString().trim()))].filter(x => x).sort();
+    let el = document.getElementById('selProv');
+    el.innerHTML = '<option value="ALL">- Todas -</option>';
+    list.forEach(v => el.innerHTML += `<option value="${v}">${v}</option>`);
+  }
+
+  function actualizarComunas() {
+    const provSel = document.getElementById('selProv').value;
+    const filtered = provSel === "ALL" ? DB : DB.filter(r => r[IDX.pro]?.toString().trim() === provSel);
+    const list = [...new Set(filtered.map(r => r[IDX.com]?.toString().trim()))].filter(x => x).sort();
+    let el = document.getElementById('selComuna');
+    el.innerHTML = '<option value="ALL">- Todas -</option>';
+    list.forEach(v => el.innerHTML += `<option value="${v}">${v}</option>`);
+    render();
+  }
+
+  const f_miles = (n) => "$" + (Math.round(n / 1000)).toLocaleString('es-CL');
+
+  function render() {
+    const fP = document.getElementById('selProv').value, fC = document.getElementById('selComuna').value,
+          search = document.getElementById('busqueda').value.toLowerCase();
+
+    const rows = DB.filter(r => {
+      const matchP = fP === "ALL" || r[IDX.pro]?.toString().trim() === fP;
+      const matchC = fC === "ALL" || r[IDX.com]?.toString().trim() === fC;
+      const matchS = r[IDX.nom]?.toString().toLowerCase().includes(search) || 
+                     r[IDX.cod]?.toString().toLowerCase().includes(search) || 
+                     r[IDX.for]?.toString().toLowerCase().includes(search);
+      return matchP && matchC && matchS;
+    });
+
+    let totalC = 0, countRT = 0, s = { obs: 0, reevM: 0, reevC: 0, tramRec: 0, tramObs: 0, oth: 0 };
+    let html = "";
+
+    rows.forEach(r => {
+      const val = parseInt(r[IDX.mon]) || 0;
+      const est = (r[IDX.est] || "").toString().trim().toUpperCase();
+      const rv = (r[IDX.reev] || "").toString().trim().toUpperCase() === "SI";
+
+      if (est.includes("CUMPLE RT")) { countRT++; totalC += val; }
+      if (rv) { s.reevM += val; s.reevC++; if(!est.includes("CUMPLE RT")) totalC += val; }
+      
+      if (est.includes("OBSERVADO")) s.obs++;
+      else if (est === "RT FIRMA") s.tramRec++;
+      else if (est === "FIRMA OBS") s.tramObs++;
+      else if (!est.includes("CUMPLE RT")) s.oth++;
+
+      let badge = est.includes('RT') ? 'bg-success' : (est.includes('OBS') ? 'bg-warning text-dark' : 'bg-secondary text-white');
+
+      html += `<tr>
+        <td class="text-muted fw-bold">${r[IDX.cod]}</td>
+        <td class="col-iniciativa">${r[IDX.nom]}</td>
+        <td>${r[IDX.for] || '-'}</td>
+        <td>${r[IDX.pro]}</td>
+        <td>${r[IDX.com]}</td>
+        <td class="text-end fw-bold text-primary">${f_miles(val)}</td>
+        <td class="text-center"><span class="badge ${badge}">${est || 'PENDIENTE'}</span></td>
+      </tr>`;
+    });
+
+    document.getElementById('tableBody').innerHTML = html;
+    document.getElementById('kpiCosto').innerText = f_miles(totalC);
+    document.getElementById('kpiRec').innerText = countRT;
+    document.getElementById('kpiCount').innerText = rows.length;
+    document.getElementById('cardTramRecCant').innerText = s.tramRec;
+    document.getElementById('cardReevMonto').innerText = f_miles(s.reevM);
+    document.getElementById('cardReevCant').innerText = s.reevC;
+    document.getElementById('cardObsCant').innerText = s.obs;
+    document.getElementById('cardTramObsCant').innerText = s.tramObs;
+    document.getElementById('cardOthCant').innerText = s.oth;
+  }
+
+  async function exportarPDF() {
+    const btn = document.getElementById('btnPDF');
+    btn.disabled = true; btn.innerHTML = '⏳...';
+    
+    const element = document.getElementById('dashboard');
+    const clone = element.cloneNode(true);
+    clone.querySelectorAll('.no-print').forEach(el => el.remove());
+    clone.style.width = '1400px';
+
+    const opt = { 
+      margin: 8, filename: 'Reporte_C33_Lagos.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 1.5, useCORS: true }, 
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } 
+    };
+    
+    try {
+      await html2pdf().set(opt).from(clone).save();
+    } catch (e) { console.error(e); } finally {
+      btn.disabled = false; btn.innerHTML = '📄 Exportar PDF';
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>
