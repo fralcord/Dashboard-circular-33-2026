@@ -122,9 +122,8 @@
     </div>
   </div>
 
-  <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-2 mb-4 text-center no-print">
+  <div class="row row-cols-2 row-cols-md-4 g-2 mb-4 text-center no-print">
     <div class="col"><div class="status-card bg-tram-rec"><span class="status-title">Trámite para Recomendación</span><h3 id="cardTramRecMonto" class="status-amount">$ 0</h3><div id="cardTramRecCant" class="cant-proyectos">0</div><small>Proyectos (Firma RT)</small></div></div>
-    <div class="col"><div class="status-card bg-reev"><span class="status-title">En Reevaluación</span><h3 id="cardReevMonto" class="status-amount">$ 0</h3><div id="cardReevCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
     <div class="col"><div class="status-card bg-obs"><span class="status-title">Observados</span><div id="cardObsCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
     <div class="col"><div class="status-card bg-tram-obs"><span class="status-title">Trámite para Observación</span><div id="cardTramObsCant" class="cant-proyectos">0</div><small>Proyectos (Firma OBS)</small></div></div>
     <div class="col"><div class="status-card bg-oth"><span class="status-title">En Evaluación / Otros estados</span><div id="cardOthCant" class="cant-proyectos">0</div><small>Proyectos</small></div></div>
@@ -202,7 +201,7 @@
       return matchP && matchC && matchS;
     });
 
-    let totalC = 0, countRT = 0, s = { obs: 0, reevM: 0, reevC: 0, tramRec: 0, tramRecM: 0, tramObs: 0, oth: 0 };
+    let totalC = 0, countRT = 0, s = { obs: 0, reevC: 0, reevM: 0, tramRec: 0, tramRecM: 0, tramObs: 0, oth: 0 };
     let html = "";
 
     rows.forEach(r => {
@@ -211,7 +210,7 @@
       const rv = (r[IDX.reev] || "").toString().trim().toUpperCase() === "SI";
 
       if (est.includes("CUMPLE RT")) { countRT++; totalC += val; }
-      if (rv) { s.reevM += val; s.reevC++; if(!est.includes("CUMPLE RT")) totalC += val; }
+      if (rv) { s.reevC++; s.reevM += val; if(!est.includes("CUMPLE RT")) totalC += val; }
       
       if (est.includes("OBSERVADO")) s.obs++;
       else if (est === "RT FIRMA") { s.tramRec++; s.tramRecM += val; }
@@ -236,61 +235,54 @@
     document.getElementById('kpiCount').innerText = rows.length;
     document.getElementById('cardTramRecMonto').innerText = f_miles(s.tramRecM);
     document.getElementById('cardTramRecCant').innerText = s.tramRec;
-    document.getElementById('cardReevMonto').innerText = f_miles(s.reevM);
-    document.getElementById('cardReevCant').innerText = s.reevC;
     document.getElementById('cardObsCant').innerText = s.obs;
     document.getElementById('cardTramObsCant').innerText = s.tramObs;
     document.getElementById('cardOthCant').innerText = s.oth;
   }
 
+  // --- PDF RECONSTRUCCIÓN (ALTA CALIDAD / FORMATO OFICIO) ---
   async function exportarPDF() {
     const btn = document.getElementById('btnPDF');
-    btn.disabled = true; btn.innerHTML = '⏳...';
+    btn.disabled = true; btn.innerHTML = '⏳ Generando...';
 
     const costo = document.getElementById('kpiCosto').innerText;
     const rt = document.getElementById('kpiRec').innerText;
     const total = document.getElementById('kpiCount').innerText;
-    const reevMont = document.getElementById('cardReevMonto').innerText;
-    const reevCant = document.getElementById('cardReevCant').innerText;
     const tramMont = document.getElementById('cardTramRecMonto').innerText;
     const tramCant = document.getElementById('cardTramRecCant').innerText;
     const tableHtml = document.getElementById('mainTable').outerHTML;
 
     const pdfTemplate = `
-      <div style="font-family: Arial, sans-serif; padding: 20px; width: 1050px;">
-        <div style="border-bottom: 3px solid #004a87; padding-bottom: 10px; margin-bottom: 20px;">
-          <h1 style="color: #004a87; margin: 0; font-size: 24px;">Reporte de Iniciativas Circular 33</h1>
-          <p style="margin: 5px 0; color: #666; font-size: 14px;">Gobierno Regional de Los Lagos - Gestión 2026</p>
+      <div style="font-family: Arial, sans-serif; padding: 25px; width: 1050px; background: white;">
+        <div style="border-bottom: 3px solid #004a87; padding-bottom: 10px; margin-bottom: 25px;">
+          <h1 style="color: #004a87; margin: 0; font-size: 26px;">Reporte de Iniciativas Circular 33</h1>
+          <p style="margin: 5px 0; color: #666; font-size: 14px;">Gobierno Regional de Los Lagos - Reporte Institucional 2026</p>
         </div>
 
-        <table style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
+        <table style="width: 100%; margin-bottom: 30px; border-collapse: collapse;">
           <tr>
-            <td style="width: 20%; border: 1px solid #ddd; padding: 10px; text-align: center;">
-              <span style="font-size: 10px; color: #666; font-weight: bold; text-transform: uppercase;">Costo Total</span><br>
-              <strong style="font-size: 18px; color: #004a87;">${costo}</strong>
+            <td style="width: 25%; border: 1px solid #ddd; padding: 20px; text-align: center;">
+              <span style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase;">Costo Total</span><br>
+              <strong style="font-size: 26px; color: #004a87;">${costo}</strong>
             </td>
-            <td style="width: 20%; border: 1px solid #ddd; padding: 10px; text-align: center;">
-              <span style="font-size: 10px; color: #666; font-weight: bold; text-transform: uppercase;">RT</span><br>
-              <strong style="font-size: 18px; color: #10b981;">${rt}</strong>
+            <td style="width: 25%; border: 1px solid #ddd; padding: 20px; text-align: center;">
+              <span style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase;">Recomendados (RT)</span><br>
+              <strong style="font-size: 26px; color: #10b981;">${rt}</strong>
             </td>
-            <td style="width: 20%; border: 1px solid #ddd; padding: 10px; text-align: center;">
-              <span style="font-size: 10px; color: #666; font-weight: bold; text-transform: uppercase;">Trámite Rec.</span><br>
-              <strong style="font-size: 18px; color: #0dcaf0;">${tramMont}</strong><br>
-              <small style="color: #666;">(${tramCant})</small>
+            <td style="width: 25%; border: 1px solid #ddd; padding: 20px; text-align: center;">
+              <span style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase;">En Trámite Rec.</span><br>
+              <strong style="font-size: 26px; color: #0dcaf0;">${tramMont}</strong><br>
+              <small style="color: #666;">(${tramCant} Proyectos)</small>
             </td>
-            <td style="width: 20%; border: 1px solid #ddd; padding: 10px; text-align: center;">
-              <span style="font-size: 10px; color: #666; font-weight: bold; text-transform: uppercase;">En Reevaluación</span><br>
-              <strong style="font-size: 18px; color: #d946ef;">${reevMont}</strong><br>
-              <small style="color: #666;">(${reevCant})</small>
-            </td>
-            <td style="width: 20%; border: 1px solid #ddd; padding: 10px; text-align: center;">
-              <span style="font-size: 10px; color: #666; font-weight: bold; text-transform: uppercase;">Universo</span><br>
-              <strong style="font-size: 18px; color: #334155;">${total}</strong>
+            <td style="width: 25%; border: 1px solid #ddd; padding: 20px; text-align: center;">
+              <span style="font-size: 12px; color: #666; font-weight: bold; text-transform: uppercase;">Universo Total</span><br>
+              <strong style="font-size: 26px; color: #334155;">${total}</strong>
             </td>
           </tr>
         </table>
         
         <div style="font-size: 11px;">${tableHtml}</div>
+        <div style="margin-top: 20px; font-size: 10px; color: #999; text-align: right;">Documento generado el ${new Date().toLocaleDateString('es-CL')}</div>
       </div>
     `;
 
@@ -304,17 +296,17 @@
       th.style.backgroundColor = "#f8fafc";
       th.style.color = "#64748b";
       th.style.border = "1px solid #e2e8f0";
-      th.style.padding = "6px";
+      th.style.padding = "8px";
     });
     element.querySelectorAll('td').forEach(td => {
       td.style.border = "1px solid #f1f5f9";
-      td.style.padding = "6px";
+      td.style.padding = "8px";
     });
 
     const opt = {
       margin: 10,
       filename: 'Reporte_Circular33_Lagos_2026.pdf',
-      html2canvas: { scale: 2, useCORS: true },
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
       jsPDF: { unit: 'mm', format: 'legal', orientation: 'landscape' }
     };
 
